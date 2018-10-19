@@ -82,31 +82,32 @@ class Operateur(object):
 
     def _prepare_data_research(self, words):
         payload = {'search_terms': words, 'search_simple': 1, 'action': 'process', 'page_size': 2, 'json': 1}
-        r = requests.get(self.search_url, params=payload, allow_redirects=False)
+        request = requests.get(self.search_url, params=payload, allow_redirects=False)
 
-        if r.status_code == 301:
-            numero_produit = re.search(r'^/produit/(\d+)/?[0-9a-zA-Z_\-]*/?$', r.next.path_url).group(1)
-            r = requests.get(self.product_url.format(numero_produit))
-            r = r.json()['product']
+        if request.status_code == 301:
+            numero_produit = re.search(r'^/produit/(\d+)/?[0-9a-zA-Z_\-]*/?$', request.next.path_url).group(1)
+            request = requests.get(self.product_url.format(numero_produit))
+            request = request.json()['product']
         else:
-            r = r.json()
+            request = request.json()
 
-            if r['count'] > 0:
-                r = r['products'][0]
+            if request['count'] > 0:
+                request = request['products'][0]
             else:
                 return False
 
         i = 0
-        while i <= len(r['categories_tags']) - 1:
-            if ':' in r['categories_tags'][i]:
-                r['categories_tags'][i] = (r['categories_tags'][i].split(':'))[1]
+        while i <= len(request['categories_tags']) - 1:
+            if ':' in request['categories_tags'][i]:
+                request['categories_tags'][i] = (request['categories_tags'][i].split(':'))[1]
             i += 1
 
-        subsitutions = self._get_result_of_substitute_request(r['categories_tags'], r.get('nutrition_grades', 'e'))
+        subsitutions = self._get_result_of_substitute_request(request['categories_tags'],
+                                                              request.get('nutrition_grades', 'e'))
 
-        return self._execute_product_sql_database(r, subsitutions)
+        return self._execute_product_sql_database(request, subsitutions)
 
-    def _execute_product_sql_database(self, r, substitutes, deep=False):
+    def _execute_product_sql_database(self, r, substitutes):
 
         result_args = self.cursor.callproc('verifier_si_produit_exist_by_code_bar', (r['code'], 0, 0))
 
@@ -161,10 +162,30 @@ class Operateur(object):
 
         self.mydb.commit()
 
-        if not deep:
+        if substitutes is not None:
             self._execute_substitutes_sql_database(r_id, substitutes)
 
         return r_id
+
+    def _execute_substitutes_sql_database(self, produit_id, substitutes):
+        if substitutes is not None:
+            for substitution in substitutes:
+
+                substitution_id = self._execute_product_sql_database(substitution, None)
+
+                if produit_id != substitution_id:
+                    sql = "INSERT INTO produit_substitute_produit (produit_id_1, produit_id_2, best) " \
+                          "VALUES (%s, %s, %s) " \
+                          "ON DUPLICATE KEY UPDATE produit_id_2 = produit_id_2;"
+                    val = (produit_id, substitution_id, substitution_id)
+
+                    self.cursor.execute(sql, val)
+
+        sql = "UPDATE produit SET research_substitutes = %s WHERE id = %s"
+        val = (1, produit_id)
+        self.cursor.execute(sql, val)
+
+        self.mydb.commit()
 
     def _get_result_of_substitute_request(self, categories, nutrition_grades):
         substitutes = None
@@ -198,26 +219,6 @@ class Operateur(object):
                     i += 1
 
         return substitutes
-
-    def _execute_substitutes_sql_database(self, produit_id, substitutes):
-        if substitutes is not None:
-            for substitution in substitutes:
-
-                substitution_id = self._execute_product_sql_database(substitution, None, True)
-
-                if produit_id != substitution_id:
-                    sql = "INSERT INTO produit_substitute_produit (produit_id_1, produit_id_2, best) " \
-                          "VALUES (%s, %s, %s) " \
-                          "ON DUPLICATE KEY UPDATE produit_id_2 = produit_id_2;"
-                    val = (produit_id, substitution_id, substitution_id)
-
-                    self.cursor.execute(sql, val)
-
-        sql = "UPDATE produit SET research_substitutes = %s WHERE id = %s"
-        val = (1, produit_id)
-        self.cursor.execute(sql, val)
-
-        self.mydb.commit()
 
     def close(self):
         self.cursor.close()
