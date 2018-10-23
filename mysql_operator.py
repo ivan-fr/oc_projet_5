@@ -24,8 +24,8 @@ def _find_words(string):
 class Operator(object):
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
     product_url_json = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
-    product_url = "https://fr.openfoodfacts.org/produit/{}"
-    stats_notes_categorie_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
+    product_url = "https://fr.openfoodfacts.org/product/{}"
+    stats_notes_category_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
     def __init__(self):
@@ -84,7 +84,7 @@ class Operator(object):
 
         while True:
             try:
-                product_number = int(input('Choisissez un numéro de produit : '))
+                product_number = int(input('Choisissez un numéro de product : '))
                 if not (1 <= product_number <= range_param):
                     raise ValueError()
             except ValueError:
@@ -104,7 +104,7 @@ class Operator(object):
         if not products:
             return 0
 
-        print('Choisissez un produit :')
+        print('Choisissez un product :')
         range_param = 0
         for i, product in enumerate(products, start=1):
             range_param = i
@@ -112,7 +112,7 @@ class Operator(object):
 
         while True:
             try:
-                product_number = int(input('Choisissez un numéro de produit : '))
+                product_number = int(input('Choisissez un numéro de product : '))
                 if not (1 <= product_number <= range_param):
                     raise ValueError()
             except ValueError:
@@ -131,7 +131,7 @@ class Operator(object):
         procedure_result = self.cursor.callproc('check_if_product_exist_by_bar_code', (product['code'], 0, 0, 0))
 
         if procedure_result[1]:
-            print('Produit déjà présent dans la base de données.')
+            print('product déjà présent dans la base de données.')
             operateur_result = []
 
             if not procedure_result[2] and not procedure_result[3]:
@@ -163,7 +163,7 @@ class Operator(object):
 
             if save_choice == 'y':
                 self._execute_product_sql_database(product, substitutes)
-                print('Produit enregistré dans la base de données.')
+                print('product enregistré dans la base de données.')
 
     def printer_adapter_for_terminal(self, products):
 
@@ -181,10 +181,10 @@ class Operator(object):
         for product in products:
             if not i == 0:
                 print("========")
-                print("Substitut produit")
+                print("Substitut product")
             else:
                 print("==================")
-                print("Résultat produit")
+                print("Résultat product")
                 i += 1
 
             print(product['product_name'], '|', "code_bar :", product['code'],
@@ -198,8 +198,8 @@ class Operator(object):
             print('magasins :', product['stores_tags'])
         print("==================")
 
-    def fill_list_from_database(self, produit_id, list):
-        self.cursor.callproc('get_product_detail', (produit_id,))
+    def fill_list_from_database(self, product_id, list):
+        self.cursor.callproc('get_product_detail', (product_id,))
 
         for result in self.cursor.stored_results():
             list.append(dict(zip(result.column_names, result.fetchone())))
@@ -218,8 +218,8 @@ class Operator(object):
         request = requests.get(self.search_url, params=params, allow_redirects=False)
 
         if request.status_code == 301:
-            numero_produit = re.search(r'^/produit/(\d+)/?[0-9a-zA-Z_\-]*/?$', request.next.path_url).group(1)
-            request = requests.get(self.product_url_json.format(numero_produit))
+            numero_product = re.search(r'^/product/(\d+)/?[0-9a-zA-Z_\-]*/?$', request.next.path_url).group(1)
+            request = requests.get(self.product_url_json.format(numero_product))
             request = (request.json()['product'],)
         else:
             request = request.json()
@@ -231,26 +231,26 @@ class Operator(object):
 
         return request
 
-    def _get_substitutes(self, categories, nutrition_grades):
+    def _get_substitutes(self, categorys, nutrition_grades):
         substitutes = None
 
-        # max_len = max(map(len, categories))
-        # categorie = max(item for item in categories if len(item) == max_len)
-        if not categories:
+        # max_len = max(map(len, categorys))
+        # category = max(item for item in categorys if len(item) == max_len)
+        if not categorys:
             return substitutes
 
-        categorie = categories[-1]
+        category = categorys[-1]
 
-        r2 = requests.get(self.stats_notes_categorie_url.format(slugify(categorie)), allow_redirects=False)
+        r2 = requests.get(self.stats_notes_category_url.format(slugify(category)), allow_redirects=False)
 
         if r2.status_code == 301:
-            categorie = re.search(r'^/categorie/([0-9a-z_\-]*).json$', r2.next.path_url).group(1)
-            r2 = requests.get(self.stats_notes_categorie_url.format(categorie))
+            category = re.search(r'^/categorie/([0-9a-z_\-]*).json$', r2.next.path_url).group(1)
+            r2 = requests.get(self.stats_notes_category_url.format(category))
 
         r2 = r2.json()
 
         if r2['count'] > 0 and r2['tags'][0]['id'] < nutrition_grades:
-            r3 = requests.get(self.product_marks_url.format(slugify(categorie), r2['tags'][0]['id']))
+            r3 = requests.get(self.product_marks_url.format(slugify(category), r2['tags'][0]['id']))
             r3 = r3.json()
             substitutes = r3['products'][:5]
 
@@ -271,61 +271,61 @@ class Operator(object):
         if procedure_result[1]:
             return procedure_result[1]
 
-        sql = "INSERT INTO produit (nom, nom_generic, nutrition_grade, code_bar, code_bar_unique) " \
-              "VALUES (%s, %s, %s, %s, %s);"
+        sql = "INSERT INTO product (name, generic_name, nutrition_grades, bar_code_unique) " \
+              "VALUES (%s, %s, %s, %s);"
         val = (product.get('product_name', ''), product.get('generic_name', ''),
-               product.get('nutrition_grades', 'e'), product['code'], product['code'])
+               product.get('nutrition_grades', 'e'), product['code'])
 
         self.cursor.execute(sql, val)
 
         r_id = self.cursor.lastrowid
 
-        for categorie in product.get('categories_tags', ''):
-            sql = "INSERT INTO categorie (nom) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
-            val = (categorie,)
+        for category in product.get('categories_tags', ''):
+            sql = "INSERT INTO category (name) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
+            val = (category,)
             self.cursor.execute(sql, val)
 
-            _categorie_id = self.cursor.lastrowid
+            _category_id = self.cursor.lastrowid
 
-            sql = "INSERT INTO produit_categorie (categorie_id, produit_id) VALUES (%s, %s) " \
-                  "ON DUPLICATE KEY UPDATE categorie_id = categorie_id;"
-            val = (_categorie_id, r_id)
+            sql = "INSERT INTO product_category (category_id, product_id) VALUES (%s, %s) " \
+                  "ON DUPLICATE KEY UPDATE category_id = category_id;"
+            val = (_category_id, r_id)
             self.cursor.execute(sql, val)
 
         for ingredient in product.get('ingredients', ''):
-            sql = "INSERT INTO ingredient (nom) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
+            sql = "INSERT INTO ingredient (name) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
             val = (ingredient['text'],)
             self.cursor.execute(sql, val)
 
             _ingredient_id = self.cursor.lastrowid
 
-            sql = "INSERT INTO produit_ingredient (ingredient_id, produit_id) VALUES (%s, %s) " \
+            sql = "INSERT INTO product_ingredient (ingredient_id, product_id) VALUES (%s, %s) " \
                   "ON DUPLICATE KEY UPDATE ingredient_id = ingredient_id;"
 
             val = (_ingredient_id, r_id)
             self.cursor.execute(sql, val)
 
         for brand in product.get('brands_tags', ''):
-            sql = "INSERT INTO marque (nom) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
+            sql = "INSERT INTO brand (name) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
             val = (brand,)
             self.cursor.execute(sql, val)
 
-            _marque_id = self.cursor.lastrowid
+            _brand_id = self.cursor.lastrowid
 
-            sql = "INSERT INTO produit_marque (marque_id, produit_id) VALUES (%s, %s) " \
-                  "ON DUPLICATE KEY UPDATE marque_id = marque_id;"
-            val = (_marque_id, r_id)
+            sql = "INSERT INTO product_brand (brand_id, product_id) VALUES (%s, %s) " \
+                  "ON DUPLICATE KEY UPDATE brand_id = brand_id;"
+            val = (_brand_id, r_id)
             self.cursor.execute(sql, val)
 
         for store in product.get('stores_tags', ''):
-            sql = "INSERT INTO magasin (nom) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
+            sql = "INSERT INTO store (name) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
             val = (store,)
             self.cursor.execute(sql, val)
 
             _store_id = self.cursor.lastrowid
 
-            sql = "INSERT INTO produit_magasin (magasin_id, produit_id) VALUES (%s, %s) " \
-                  "ON DUPLICATE KEY UPDATE magasin_id = magasin_id;"
+            sql = "INSERT INTO product_store (store_id, product_id) VALUES (%s, %s) " \
+                  "ON DUPLICATE KEY UPDATE store_id = store_id;"
             val = (_store_id, r_id)
             self.cursor.execute(sql, val)
 
@@ -336,22 +336,22 @@ class Operator(object):
 
         return r_id
 
-    def _execute_substitutes_sql_database(self, produit_id, substitutes):
+    def _execute_substitutes_sql_database(self, product_id, substitutes):
         if substitutes is not None:
             for substitution in substitutes:
 
                 substitution_id = self._execute_product_sql_database(substitution, None)
 
-                if produit_id != substitution_id:
-                    sql = "INSERT INTO produit_substitute_produit (produit_id_1, produit_id_2) " \
+                if product_id != substitution_id:
+                    sql = "INSERT INTO product_substitute_product (product_id_1, product_id_2) " \
                           "VALUES (%s, %s) " \
-                          "ON DUPLICATE KEY UPDATE produit_id_2 = produit_id_2;"
-                    val = (produit_id, substitution_id)
+                          "ON DUPLICATE KEY UPDATE product_id_2 = product_id_2;"
+                    val = (product_id, substitution_id)
 
                     self.cursor.execute(sql, val)
 
-        sql = "UPDATE produit SET research_substitutes = %s WHERE id = %s"
-        val = (1, produit_id)
+        sql = "UPDATE product SET research_substitutes = %s WHERE id = %s"
+        val = (1, product_id)
         self.cursor.execute(sql, val)
 
         self.mydb.commit()

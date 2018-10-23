@@ -3,185 +3,184 @@ USE openfoodfacts;
 
 create table ingredient (
 	id smallint unsigned auto_increment,
-	nom varchar(150) not null,
-    unique index ind_un_ingredient_nom (nom),
+	name varchar(150) not null,
+    unique index ind_un_ingredient_name (name),
 	PRIMARY KEY(id)
 );
 
 
-CREATE TABLE produit_ingredient (
+CREATE TABLE product_ingredient (
 	ingredient_id smallint unsigned,
-	produit_id smallint unsigned,
-	PRIMARY KEY (ingredient_id, produit_id)
+	product_id smallint unsigned,
+	PRIMARY KEY (ingredient_id, product_id)
 );
 
 
-create table magasin (
+create table store (
 	id smallint unsigned auto_increment,
-	nom varchar(150) not null,
-    unique index ind_un_magasin_nom (nom),
+	name varchar(150) not null,
+    unique index ind_un_store_name (name),
 	PRIMARY KEY(id)
 );
 
 
-CREATE TABLE produit_magasin (
-	magasin_id smallint unsigned,
-	produit_id smallint unsigned,
-	PRIMARY KEY (magasin_id, produit_id)
+CREATE TABLE product_store (
+	store_id smallint unsigned,
+	product_id smallint unsigned,
+	PRIMARY KEY (store_id, product_id)
 );
 
 
-create table marque (
+create table brand (
 	id smallint unsigned auto_increment,
-	nom varchar(150) not null,
-    unique index ind_uni_marque_nom (nom),
+	name varchar(150) not null,
+    unique index ind_uni_brand_name (name),
 	PRIMARY KEY(id)
 );
 
 
-CREATE TABLE produit_marque (
-	marque_id smallint unsigned,
-	produit_id smallint unsigned,
-	PRIMARY KEY (marque_id, produit_id)
+CREATE TABLE product_brand (
+	brand_id smallint unsigned,
+	product_id smallint unsigned,
+	PRIMARY KEY (brand_id, product_id)
 );
 
 
-CREATE TABLE categorie (
+CREATE TABLE category (
 	id smallint unsigned auto_increment,
-	nom varchar(150) not null,
-    unique index ind_uni_categorie_nom (nom),
+	name varchar(150) not null,
+    unique index ind_uni_category_name (name),
 	PRIMARY KEY(id)
 );
 
 
-CREATE TABLE produit_categorie (
-	categorie_id smallint unsigned,
-	produit_id smallint unsigned,
-	PRIMARY KEY (categorie_id, produit_id)
+CREATE TABLE product_category (
+	category_id smallint unsigned,
+	product_id smallint unsigned,
+	PRIMARY KEY (category_id, product_id)
 );
 
 
-create table produit (
+create table product (
 	id smallint unsigned not null auto_increment,
-    nom varchar(255) not null,
-    nom_generic varchar(255) not null,
-    nutrition_grade varchar(1) not null,
-    code_bar varchar(50) not null,
-	code_bar_unique varchar(50) not null,
+    product_name varchar(255) not null,
+    generic_name varchar(255) not null,
+    nutrition_grades varchar(1) not null,
+	bar_code_unique varchar(50) not null,
     research_substitutes boolean not null default 0,
-    unique index ind_uni_code_bar_unique (code_bar_unique),
+    unique index ind_uni_code_bar_unique (bar_code_unique),
     primary key (id)
 );
 
 
-create table produit_substitute_produit (
-	produit_id_1 smallint unsigned,
-    produit_id_2 smallint unsigned,
-    primary key (produit_id_1, produit_id_2)
+create table product_substitute_product (
+	product_id_1 smallint unsigned,
+    product_id_2 smallint unsigned,
+    primary key (product_id_1, product_id_2)
 );
 
 
-alter table produit_categorie
-add constraint fk_categorie_produit_categorie_id foreign key (categorie_id) references categorie(id),
-add constraint fk_categorie_produit_produit_id foreign key (produit_id) references produit(id);
+alter table product_category
+add constraint fk_category_product_category_id foreign key (category_id) references category(id),
+add constraint fk_category_product_product_id foreign key (product_id) references product(id);
 
 
-alter table produit_ingredient
-add constraint fk_produit_ingredient_ingredient_id foreign key (ingredient_id) references ingredient(id),
-add constraint ffk_produit_ingredient_produit_id foreign key (produit_id) references produit(id);
+alter table product_ingredient
+add constraint fk_product_ingredient_ingredient_id foreign key (ingredient_id) references ingredient(id),
+add constraint ffk_product_ingredient_product_id foreign key (product_id) references product(id);
 
 
-alter table produit_marque
-add constraint fk_produit_marque_marque_id foreign key (marque_id) references marque(id),
-add constraint ffk_produit_marque_produit_id foreign key (produit_id) references produit(id);
+alter table product_brand
+add constraint fk_product_brand_brand_id foreign key (brand_id) references brand(id),
+add constraint ffk_product_brand_product_id foreign key (product_id) references product(id);
 
 
-alter table produit_substitute_produit
-add constraint fk_produit_substitute_produit_produit_id_1 foreign key (produit_id_1) references produit(id),
-add constraint ffk_produit_substitute_produit_produit_id_2 foreign key (produit_id_2) references produit(id);
+alter table product_substitute_product
+add constraint fk_product_substitute_product_product_id_1 foreign key (product_id_1) references product(id),
+add constraint ffk_product_substitute_product_product_id_2 foreign key (product_id_2) references product(id);
 
 
-alter table produit_magasin
-add constraint fk_produit_magasin_magasin_id foreign key (magasin_id) references magasin(id),
-add constraint ffk_produit_magasin_produit_id foreign key (produit_id) references produit(id);
+alter table product_store
+add constraint fk_product_store_store_id foreign key (store_id) references store(id),
+add constraint ffk_product_store_product_id foreign key (product_id) references product(id);
 
 
 DELIMITER |
 create procedure check_if_product_exist_by_bar_code(in p_code_bar varchar(50),
-													   out p_produit_id smallint unsigned,
+													   out p_product_id smallint unsigned,
 												       out p_exist_substitutes boolean,
 													   out p_research_subsitutes boolean)
 begin
 	DECLARE EXIT HANDLER FOR NOT FOUND
     begin
-		set p_produit_id = 0;
+		set p_product_id = 0;
         set p_exist_substitutes = 0;
 		set p_research_subsitutes = 0;
     end;
 
-	select produit.id,
+	select product.id,
 			  case
-			  when group_concat(produit_substitute_produit.produit_id_2) is null then 0
+			  when group_concat(product_substitute_product.product_id_2) is null then 0
 			  else 1
               end,
-              produit.research_substitutes
-			  into p_produit_id, p_exist_substitutes, p_research_subsitutes
-    from produit
+              product.research_substitutes
+			  into p_product_id, p_exist_substitutes, p_research_subsitutes
+    from product
     
-    left join produit_substitute_produit on  produit.id = produit_substitute_produit.produit_id_1
+    left join product_substitute_product on  product.id = product_substitute_product.product_id_1
     
     where code_bar_unique = p_code_bar
-    group by produit.id;
+    group by product.id;
 end|
 DELIMITER ;
 
 DELIMITER |
-CREATE PROCEDURE get_product_detail(in p_produit_id smallint unsigned)
+CREATE PROCEDURE get_product_detail(in p_product_id smallint unsigned)
 BEGIN
-	select produit.nom as product_name,
-			  produit.nom_generic as generic_name,
-			  produit.nutrition_grade as nutrition_grades,
-              produit.code_bar_unique as code,
-              group_concat(distinct magasin.nom separator ', ') as stores_tags,
-			  group_concat(distinct categorie.nom separator ', ') as categories_tags,
-			  group_concat(distinct ingredient.nom separator ', ') as ingredients,
-			  group_concat(distinct marque.nom separator ', ') as brands_tags,
-              group_concat(distinct produit_substitute_produit.produit_id_2) as substitutes
-	from produit
+	select product.product_name as product_name,
+			  product.generic_name as generic_name,
+			  product.nutrition_grades as nutrition_grades,
+              product.code_bar_unique as code,
+              group_concat(distinct store.name separator ', ') as stores_tags,
+			  group_concat(distinct category.name separator ', ') as categorys_tags,
+			  group_concat(distinct ingredient.name separator ', ') as ingredients,
+			  group_concat(distinct brand.name separator ', ') as brands_tags,
+              group_concat(distinct product_substitute_product.product_id_2) as substitutes
+	from product
 	
-	left join produit_categorie on produit.id = produit_categorie.produit_id
-	left join categorie on produit_categorie.categorie_id = categorie.id
+	left join product_category on product.id = product_category.product_id
+	left join category on product_category.category_id = category.id
 	
-	left join produit_ingredient on produit.id = produit_ingredient.produit_id
-	left join ingredient on produit_ingredient.ingredient_id = ingredient.id
+	left join product_ingredient on product.id = product_ingredient.product_id
+	left join ingredient on product_ingredient.ingredient_id = ingredient.id
     
-	left join produit_marque on produit.id = produit_marque.produit_id
-	left join marque on produit_marque.marque_id = marque.id
+	left join product_brand on product.id = product_brand.product_id
+	left join brand on product_brand.brand_id = brand.id
 
-	left join produit_magasin on produit.id = produit_magasin.produit_id
-	left join magasin on produit_magasin.magasin_id = magasin.id
+	left join product_store on product.id = product_store.product_id
+	left join store on product_store.store_id = store.id
 	
-	left join produit_substitute_produit on  produit.id = produit_substitute_produit.produit_id_1
+	left join product_substitute_product on  product.id = product_substitute_product.product_id_1
 	
-	where produit.id = p_produit_id
-	group by produit.id;
+	where product.id = p_product_id
+	group by product.id;
 end|
 DELIMITER ;
 
 create or replace view V_get_substituted_products
-as select produit.id, 
-			  produit.nom as product_name,
-			  produit.nom_generic as generic_name,
-              produit.code_bar_unique as code,
+as select product.id, 
+			  product.product_name,
+			  product.generic_name,
+              product.code_bar_unique as code,
 			  case
-			  when group_concat(produit_substitute_produit.produit_id_2) is null then 0
+			  when group_concat(product_substitute_product.product_id_2) is null then 0
 			  else 1
               end as substitutes_exist,
-              produit.research_substitutes
-    from produit
+              product.research_substitutes
+    from product
 
-    left join produit_substitute_produit on  produit.id = produit_substitute_produit.produit_id_1
+    left join product_substitute_product on  product.id = product_substitute_product.product_id_1
 
-    where produit.research_substitutes = 1
-    group by produit.id
+    where product.research_substitutes = 1
+    group by product.id
     having substitutes_exist = 1;
