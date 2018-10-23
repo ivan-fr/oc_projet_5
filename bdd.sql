@@ -68,7 +68,7 @@ create table product (
     nutrition_grades varchar(1) not null,
 	bar_code_unique varchar(50) not null,
     research_substitutes boolean not null default 0,
-    unique index ind_uni_code_bar_unique (bar_code_unique),
+    unique index ind_uni_bar_code_unique (bar_code_unique),
     primary key (id)
 );
 
@@ -140,7 +140,7 @@ BEGIN
 	select product.product_name as product_name,
 			  product.generic_name as generic_name,
 			  product.nutrition_grades as nutrition_grades,
-              product.code_bar_unique as code,
+              product.bar_code_unique as code,
               group_concat(distinct store.name separator ', ') as stores_tags,
 			  group_concat(distinct category.name separator ', ') as categorys_tags,
 			  group_concat(distinct ingredient.name separator ', ') as ingredients,
@@ -171,7 +171,7 @@ create or replace view V_get_substituted_products
 as select product.id, 
 			  product.product_name,
 			  product.generic_name,
-              product.code_bar_unique as code,
+              product.bar_code_unique as code,
 			  case
 			  when group_concat(product_substitute_product.product_id_2) is null then 0
 			  else 1
