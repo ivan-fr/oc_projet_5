@@ -76,6 +76,7 @@ class Operator(object):
                 self.get_substitutable_products()
 
     def get_substitutable_products(self):
+        """Get substitutable products"""
         operateur_result = []
         self.cursor.execute("SELECT * FROM V_get_substituted_products")
         fetchall_result = self.cursor.fetchall()
@@ -93,7 +94,7 @@ class Operator(object):
             return False
 
         while True:
-            product_number = int(input('Choisissez un numéro de product : '))
+            product_number = int(input('Choisir un numéro de produit : '))
             if not (1 <= product_number <= range_param):
                 continue
             break
@@ -106,6 +107,9 @@ class Operator(object):
         self.printer(operateur_result)
 
     def research(self, research):
+        """Research function."""
+
+        # get products
         products = self._get_products(research)
 
         if not products:
@@ -118,7 +122,7 @@ class Operator(object):
             print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
 
         while True:
-            product_number = int(input('Choisissez un numéro de product : '))
+            product_number = int(input('Choisir un numéro de produit : '))
             if not (1 <= product_number <= range_param):
                 continue
             break
