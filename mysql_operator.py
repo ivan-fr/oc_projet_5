@@ -273,7 +273,7 @@ class Operator(object):
         if procedure_result[1]:
             return procedure_result[1]
 
-        sql = "INSERT INTO product (name, generic_name, nutrition_grades, bar_code_unique) " \
+        sql = "INSERT INTO product (product_name, generic_name, nutrition_grades, bar_code_unique) " \
               "VALUES (%s, %s, %s, %s);"
         val = (product.get('product_name', ''), product.get('generic_name', ''),
                product.get('nutrition_grades', 'e'), product['code'])
