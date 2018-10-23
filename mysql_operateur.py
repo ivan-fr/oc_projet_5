@@ -36,7 +36,69 @@ class Operateur(object):
 
         self.cursor = self.mydb.cursor()
 
-    def __call__(self, research):
+    def __call__(self, *args, **kwargs):
+        while True:
+            print('1) Remplacer un aliment.')
+            print('2) Retrouver mes aliments substitués.')
+            while True:
+                try:
+                    command_choice = str(input('Choisissez une commande (tapez "quit" pour quitter) : '))
+                    if not command_choice in ('1', '2', 'quit'):
+                        raise ValueError()
+                except ValueError:
+                    continue
+                break
+
+            if command_choice == '1':
+                while True:
+                    recherche = input('Tapez votre recherche (tapez "quit" pour quitter) : ')
+                    resultat = []
+
+                    if recherche == "quit":
+                        break
+
+                    if recherche:
+                        resultat = self.research(recherche)
+
+                    if not resultat:
+                        print("Aucun résultat")
+
+                    print()
+            elif command_choice == 'quit':
+                break
+            else:
+                self.get_substituted_products()
+
+    def get_substituted_products(self):
+        operateur_result = []
+        self.cursor.execute("SELECT * FROM V_get_substituted_products")
+        fetchall_result = self.cursor.fetchall()
+        columns = [column[0] for column in self.cursor.description]
+
+        range_param, products = 0, []
+        for i, product in enumerate(fetchall_result, start=1):
+            range_param = i
+            dictionary = dict(zip(columns, product))
+            products.append(dictionary)
+            print(str(i) + ')', dictionary.get('product_name', ''), '-', dictionary.get('generic_name', ''))
+
+        while True:
+            try:
+                product_number = int(input('Choisissez un numéro de produit : '))
+                if not (1 <= product_number <= range_param):
+                    raise ValueError()
+            except ValueError:
+                continue
+            break
+
+        product_number -= 1
+        product = products[product_number]
+
+        self.fill_list_from_database(product.get('id'), operateur_result)
+
+        self.printer(operateur_result)
+
+    def research(self, research):
         products = self._get_products(research)
 
         if not products:
@@ -44,9 +106,9 @@ class Operateur(object):
 
         print('Choisissez un produit :')
         range_param = 0
-        for i, produit in enumerate(products, start=1):
+        for i, product in enumerate(products, start=1):
             range_param = i
-            print(str(i) + ')', produit.get('product_name', ''), '-', produit.get('generic_name', ''))
+            print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
 
         while True:
             try:
@@ -76,17 +138,7 @@ class Operateur(object):
                 substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
                 self._execute_substitutes_sql_database(procedure_result[1], substitutes)
 
-            self.cursor.callproc('get_product_detail', (procedure_result[1],))
-
-            for result in self.cursor.stored_results():
-                operateur_result.append(dict(zip(result.column_names, result.fetchone())))
-
-            if operateur_result[0].get('substitutes', ''):
-                for substitute in str(operateur_result[0].get('substitutes', '')).split(','):
-                    self.cursor.callproc('get_product_detail', (int(substitute),))
-
-                    for result in self.cursor.stored_results():
-                        operateur_result.append(dict(zip(result.column_names, result.fetchone())))
+            self.fill_list_from_database(procedure_result[1], operateur_result)
 
             self.printer(operateur_result)
         else:
@@ -140,13 +192,26 @@ class Operateur(object):
             print(product['product_name'], '|', "code_bar :", product['code'],
                   '|', self.product_url.format(product['code']))
 
-            print("nom généric :", product['generic_name'])
+            print("nom généric :", product.get('generic_name'))
             print("marques :", product['brands_tags'])
             print('nutrition grade :', product['nutrition_grades'].upper())
             print('categories :', product['categories_tags'])
             print('ingredients :', product['ingredients'])
             print('magasins :', product['stores_tags'])
         print("==================")
+
+    def fill_list_from_database(self, produit_id, list):
+        self.cursor.callproc('get_product_detail', (produit_id,))
+
+        for result in self.cursor.stored_results():
+            list.append(dict(zip(result.column_names, result.fetchone())))
+
+        if list[0].get('substitutes', ''):
+            for substitute in str(list[0].get('substitutes', '')).split(','):
+                self.cursor.callproc('get_product_detail', (int(substitute),))
+
+                for result in self.cursor.stored_results():
+                    list.append(dict(zip(result.column_names, result.fetchone())))
 
     def _get_products(self, research):
         words = " ".join(_find_words(research))

@@ -128,9 +128,6 @@ begin
 			  into p_produit_id, p_exist_substitutes, p_research_subsitutes
     from produit
     
-	left join produit_marque on produit.id = produit_marque.produit_id
-	left join marque on produit_marque.marque_id = marque.id
-    
     left join produit_substitute_produit on  produit.id = produit_substitute_produit.produit_id_1
     
     where code_bar_unique = p_code_bar
@@ -170,3 +167,21 @@ BEGIN
 	group by produit.id;
 end|
 DELIMITER ;
+
+create or replace view V_get_substituted_products
+as select produit.id, 
+			  produit.nom as product_name,
+			  produit.nom_generic as generic_name,
+              produit.code_bar_unique as code,
+			  case
+			  when group_concat(produit_substitute_produit.produit_id_2) is null then 0
+			  else 1
+              end as substitutes_exist,
+              produit.research_substitutes
+    from produit
+
+    left join produit_substitute_produit on  produit.id = produit_substitute_produit.produit_id_1
+
+    where produit.research_substitutes = 1
+    group by produit.id
+    having substitutes_exist = 1;
