@@ -73,9 +73,9 @@ class Operator(object):
             elif command_choice == 'quit':
                 break
             else:
-                self.get_substituted_products()
+                self.get_substitutable_products()
 
-    def get_substituted_products(self):
+    def get_substitutable_products(self):
         operateur_result = []
         self.cursor.execute("SELECT * FROM V_get_substituted_products")
         fetchall_result = self.cursor.fetchall()
