@@ -289,6 +289,9 @@ class Operator(object):
     def _execute_product_sql_database(self, product, substitutes):
         # Save a product and his substitutes in the database.
 
+        # procedure_result[1] = p_product_id
+        # procedure_result[2] = p_exist_substitutes
+        # procedure_result[3] = p_research_subsitutes
         procedure_result = self.cursor.callproc('check_if_product_exist_by_bar_code', (product['code'], 0, 0, 0))
 
         if procedure_result[1]:
