@@ -142,7 +142,7 @@ BEGIN
 			  product.nutrition_grades as nutrition_grades,
               product.bar_code_unique as code,
               group_concat(distinct store.name separator ', ') as stores_tags,
-			  group_concat(distinct category.name separator ', ') as categorys_tags,
+			  group_concat(distinct category.name separator ', ') as categories_tags,
 			  group_concat(distinct ingredient.name separator ', ') as ingredients,
 			  group_concat(distinct brand.name separator ', ') as brands_tags,
               group_concat(distinct product_substitute_product.product_id_2) as substitutes

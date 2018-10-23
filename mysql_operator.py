@@ -110,7 +110,7 @@ class Operator(object):
         if not products:
             return False
 
-        print('Choisissez un product :')
+        print('Choisissez un produit :')
         range_param = 0
         for i, product in enumerate(products, start=1):
             range_param = i
