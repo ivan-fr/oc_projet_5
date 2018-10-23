@@ -104,7 +104,7 @@ class Operator(object):
         products = self._get_products(research)
 
         if not products:
-            return 0
+            return False
 
         print('Choisissez un product :')
         range_param = 0
@@ -166,6 +166,8 @@ class Operator(object):
             if save_choice == 'y':
                 self._execute_product_sql_database(product, substitutes)
                 print('product enregistré dans la base de données.')
+
+        return True
 
     def printer_adapter_for_terminal(self, products):
 
