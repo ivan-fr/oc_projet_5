@@ -129,7 +129,7 @@ begin
     
     left join product_substitute_product on  product.id = product_substitute_product.product_id_1
     
-    where code_bar_unique = p_code_bar
+    where product.bar_code_unique = p_code_bar
     group by product.id;
 end|
 DELIMITER ;

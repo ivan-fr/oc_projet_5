@@ -38,8 +38,10 @@ class Operator(object):
 
     def __call__(self, *args, **kwargs):
         while True:
+            print("==================")
             print('1) Remplacer un aliment.')
             print('2) Retrouver mes aliments substitués.')
+
             while True:
                 try:
                     command_choice = str(input('Choisissez une commande (tapez "quit" pour quitter) : '))
