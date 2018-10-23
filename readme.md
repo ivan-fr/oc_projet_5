@@ -1,3 +1,6 @@
+Utilisez les données publiques de l'OpenFoodFacts
+-
+
 Cahier des charges
 
 Description du parcours utilisateur

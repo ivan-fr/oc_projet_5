@@ -1,7 +1,7 @@
-from mysql_operateur import Operateur
+from mysql_operator import Operator
 
 
-operateur = Operateur()
+operateur = Operator()
 
 operateur()
 

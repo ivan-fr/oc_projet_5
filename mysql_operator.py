@@ -21,11 +21,11 @@ def _find_words(string):
             i += 1
 
 
-class Operateur(object):
+class Operator(object):
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
     product_url_json = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
     product_url = "https://fr.openfoodfacts.org/produit/{}"
-    stats_notes_categorie = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
+    stats_notes_categorie_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
     def __init__(self):
@@ -51,7 +51,7 @@ class Operateur(object):
 
             if command_choice == '1':
                 while True:
-                    recherche = input('Tapez votre recherche (tapez "quit" pour quitter) : ')
+                    recherche = str(input('Tapez votre recherche (tapez "quit" pour quitter) : '))
                     resultat = []
 
                     if recherche == "quit":
@@ -165,8 +165,6 @@ class Operateur(object):
                 self._execute_product_sql_database(product, substitutes)
                 print('Produit enregistré dans la base de données.')
 
-        return 1
-
     def printer_adapter_for_terminal(self, products):
 
         for product in products:
@@ -243,11 +241,11 @@ class Operateur(object):
 
         categorie = categories[-1]
 
-        r2 = requests.get(self.stats_notes_categorie.format(slugify(categorie)), allow_redirects=False)
+        r2 = requests.get(self.stats_notes_categorie_url.format(slugify(categorie)), allow_redirects=False)
 
         if r2.status_code == 301:
             categorie = re.search(r'^/categorie/([0-9a-z_\-]*).json$', r2.next.path_url).group(1)
-            r2 = requests.get(self.stats_notes_categorie.format(categorie))
+            r2 = requests.get(self.stats_notes_categorie_url.format(categorie))
 
         r2 = r2.json()
 
@@ -361,8 +359,3 @@ class Operateur(object):
     def close(self):
         self.cursor.close()
         self.mydb.close()
-
-
-if __name__ == '__main__':
-    operateur = Operateur()
-    print(operateur('3297760097280'))
