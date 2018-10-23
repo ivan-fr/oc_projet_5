@@ -157,12 +157,14 @@ class Operator(object):
             # get substitutes of the current product
             substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
 
+            # deepcopy for a isolate change
             operateur_result = [deepcopy(product)]
 
             if substitutes:
                 operateur_result.extend(deepcopy(substitutes))
 
             self.printer_adapter_for_terminal(operateur_result)
+            # print product and his subsitutes in the terminal
             self.printer(operateur_result)
 
             while True:
@@ -172,13 +174,14 @@ class Operator(object):
                 break
 
             if save_choice == 'y':
+                # save product and his substitutes
                 self._execute_product_sql_database(product, substitutes)
                 print('Produit enregistré dans la base de données.')
 
         return True
 
     def printer_adapter_for_terminal(self, products):
-
+        """Join each list in the given product from the openfoodfacts API."""
         for product in products:
             product['nutrition_grades'] = ', '.join(product['nutrition_grades'])
             product['brands_tags'] = ', '.join(product['brands_tags'])
@@ -189,14 +192,16 @@ class Operator(object):
         return products
 
     def printer(self, products):
+        """Print the data of product and his substitutes."""
+
         i = 0
         for product in products:
             if not i == 0:
                 print("========")
-                print("Substitut product")
+                print("Substitut produit")
             else:
                 print("==================")
-                print("Résultat product")
+                print("Résultat produit")
                 i += 1
 
             print(product['product_name'], '|', "code_bar :", product['code'],
@@ -211,6 +216,8 @@ class Operator(object):
         print("==================")
 
     def fill_list_from_database(self, product_id, list):
+        """Fill a given list with the product and his substitutes from the database."""
+
         self.cursor.callproc('get_product_detail', (product_id,))
 
         for result in self.cursor.stored_results():
@@ -224,6 +231,8 @@ class Operator(object):
                     list.append(dict(zip(result.column_names, result.fetchone())))
 
     def _get_products(self, research):
+        """Get products from the openfoodfacts API by research"""
+
         words = " ".join(_find_words(research))
 
         params = {'search_terms': words, 'search_simple': 1, 'action': 'process', 'page_size': 10, 'json': 1}
@@ -243,15 +252,15 @@ class Operator(object):
 
         return request
 
-    def _get_substitutes(self, categorys, nutrition_grades):
+    def _get_substitutes(self, categories, nutrition_grades):
+        """Get the best substitutes for a category"""
+
         substitutes = None
 
-        # max_len = max(map(len, categorys))
-        # category = max(item for item in categorys if len(item) == max_len)
-        if not categorys:
+        if not categories:
             return substitutes
 
-        category = categorys[-1]
+        category = categories[-1]
 
         r2 = requests.get(self.stats_notes_category_url.format(slugify(category)), allow_redirects=False)
 
@@ -266,6 +275,7 @@ class Operator(object):
             r3 = r3.json()
             substitutes = r3['products'][:5]
 
+        # wash categories tags
         if substitutes:
             for substitut in substitutes:
                 i = 0
@@ -277,6 +287,7 @@ class Operator(object):
         return substitutes
 
     def _execute_product_sql_database(self, product, substitutes):
+        # Save a product and his substitutes in the database.
 
         procedure_result = self.cursor.callproc('check_if_product_exist_by_bar_code', (product['code'], 0, 0, 0))
 
@@ -349,6 +360,7 @@ class Operator(object):
         return r_id
 
     def _execute_substitutes_sql_database(self, product_id, substitutes):
+        # save relationship beetween products
         if substitutes is not None:
             for substitution in substitutes:
 
