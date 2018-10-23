@@ -84,6 +84,10 @@ class Operator(object):
             products.append(dictionary)
             print(str(i) + ')', dictionary.get('product_name', ''), '-', dictionary.get('generic_name', ''))
 
+        if not products:
+            print('Aucun resultat.')
+            return False
+
         while True:
             try:
                 product_number = int(input('Choisissez un numéro de product : '))
