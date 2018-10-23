@@ -1,3 +1,5 @@
+from constant import *
+
 import mysql.connector
 import requests
 from slugify import slugify
@@ -6,6 +8,7 @@ from copy import deepcopy
 
 
 def _find_words(string):
+    """Get words from a sentence."""
     if string:
         cursor, i, string = 0, 0, string + " "
         while i <= len(string) - 1:
@@ -22,6 +25,7 @@ def _find_words(string):
 
 
 class Operator(object):
+    # Init url from openfoodfacts api.
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
     product_url_json = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
     product_url = "https://fr.openfoodfacts.org/product/{}"
@@ -29,25 +33,25 @@ class Operator(object):
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
     def __init__(self):
-        self.mydb = mysql.connector.connect(host="localhost",
-                                            user="openfoodfacts",
-                                            passwd="hWfY7Uv82k7L9f2Sr._.",
-                                            database="openfoodfacts")
+        # Connect to the mysql database.
+        self.mydb = mysql.connector.connect(host=DB_HOST,
+                                            user=DB_USER,
+                                            passwd=DB_PWD,
+                                            database=DB_NAME)
 
         self.cursor = self.mydb.cursor()
 
     def __call__(self, *args, **kwargs):
+        # Init main loop for the application.
         while True:
             print("==================")
             print('1) Remplacer un aliment.')
             print('2) Retrouver mes aliments substituables.')
 
+            # Logical input choices
             while True:
-                try:
-                    command_choice = str(input('Choisir une commande (tapez "quit" pour quitter) : '))
-                    if not command_choice in ('1', '2', 'quit'):
-                        raise ValueError()
-                except ValueError:
+                command_choice = str(input('Choisir une commande (tapez "quit" pour quitter) : '))
+                if not command_choice in ('1', '2', 'quit'):
                     continue
                 break
 
