@@ -17,7 +17,7 @@ L'utilisateur sélectionne 1. Le programme pose les questions suivantes à l'uti
 - Le programme propose un substitut, sa description, un magasin ou l'acheter (le cas échéant) et un lien vers la page d'Open Food Facts concernant cet aliment.
 - L'utilisateur a alors la possibilité d'enregistrer le résultat dans la base de données.
 
-Si l'utilisateur sélectionne 2, le programme affiche la liste des produits substitués enregistrés dans la base de données :
+Si l'utilisateur sélectionne 2, le programme affiche la liste des produits substituables enregistrés dans la base de données :
 
 - L'utilisateur reçoit une liste de produits substituables enregistrés dans la base de données.
 - Selectionner l'aliment [Plusieurs propositions associées à un chiffre. L'utilisateur entre le chiffre correspondant à l'aliment choisi et appuie sur entrée]
