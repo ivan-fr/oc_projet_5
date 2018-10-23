@@ -1,8 +1,6 @@
 from mysql_operator import Operator
 
-
-operateur = Operator()
-
-operateur()
-
-operateur.close()
+if __name__ == '__main__':
+    operateur = Operator()
+    operateur()
+    operateur.close()
