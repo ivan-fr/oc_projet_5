@@ -40,11 +40,11 @@ class Operator(object):
         while True:
             print("==================")
             print('1) Remplacer un aliment.')
-            print('2) Retrouver mes aliments substitués.')
+            print('2) Retrouver mes aliments substituables.')
 
             while True:
                 try:
-                    command_choice = str(input('Choisissez une commande (tapez "quit" pour quitter) : '))
+                    command_choice = str(input('Choisir une commande (tapez "quit" pour quitter) : '))
                     if not command_choice in ('1', '2', 'quit'):
                         raise ValueError()
                 except ValueError:
@@ -53,7 +53,7 @@ class Operator(object):
 
             if command_choice == '1':
                 while True:
-                    recherche = str(input('Tapez votre recherche (tapez "quit" pour quitter) : '))
+                    recherche = str(input('Taper votre recherche (tapez "quit" pour quitter) : '))
                     resultat = []
 
                     if recherche == "quit":
@@ -63,7 +63,7 @@ class Operator(object):
                         resultat = self.research(recherche)
 
                     if not resultat:
-                        print("Aucun résultat")
+                        print("Aucun résultat.")
 
                     print()
             elif command_choice == 'quit':
@@ -110,7 +110,7 @@ class Operator(object):
         if not products:
             return False
 
-        print('Choisissez un produit :')
+        print('Choisir un produit :')
         range_param = 0
         for i, product in enumerate(products, start=1):
             range_param = i
