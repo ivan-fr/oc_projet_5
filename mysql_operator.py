@@ -136,13 +136,17 @@ class Operator(object):
                 product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
             i += 1
 
+        # procedure_result[1] = p_product_id
+        # procedure_result[2] = p_exist_substitutes
+        # procedure_result[3] = p_research_subsitutes
         procedure_result = self.cursor.callproc('check_if_product_exist_by_bar_code', (product['code'], 0, 0, 0))
 
         if procedure_result[1]:
-            print('product déjà présent dans la base de données.')
+            print('Produit déjà présent dans la base de données.')
             operateur_result = []
 
             if not procedure_result[2] and not procedure_result[3]:
+                # get substitutes of the current product
                 substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
                 self._execute_substitutes_sql_database(procedure_result[1], substitutes)
 
@@ -150,6 +154,7 @@ class Operator(object):
 
             self.printer(operateur_result)
         else:
+            # get substitutes of the current product
             substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
 
             operateur_result = [deepcopy(product)]
