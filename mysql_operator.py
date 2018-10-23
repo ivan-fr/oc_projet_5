@@ -93,11 +93,8 @@ class Operator(object):
             return False
 
         while True:
-            try:
-                product_number = int(input('Choisissez un numéro de product : '))
-                if not (1 <= product_number <= range_param):
-                    raise ValueError()
-            except ValueError:
+            product_number = int(input('Choisissez un numéro de product : '))
+            if not (1 <= product_number <= range_param):
                 continue
             break
 
@@ -121,11 +118,8 @@ class Operator(object):
             print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
 
         while True:
-            try:
-                product_number = int(input('Choisissez un numéro de product : '))
-                if not (1 <= product_number <= range_param):
-                    raise ValueError()
-            except ValueError:
+            product_number = int(input('Choisissez un numéro de product : '))
+            if not (1 <= product_number <= range_param):
                 continue
             break
 
@@ -163,11 +157,8 @@ class Operator(object):
             self.printer(operateur_result)
 
             while True:
-                try:
-                    save_choice = str(input('Sauvergader dans la base de données ? (y/n) '))
-                    if not save_choice in ('y', 'n'):
-                        raise ValueError()
-                except ValueError:
+                save_choice = str(input('Sauvergader dans la base de données ? (y/n) '))
+                if not save_choice in ('y', 'n'):
                     continue
                 break
 
