@@ -169,7 +169,7 @@ class Operator(object):
 
             if save_choice == 'y':
                 self._execute_product_sql_database(product, substitutes)
-                print('product enregistré dans la base de données.')
+                print('Produit enregistré dans la base de données.')
 
         return True
 
