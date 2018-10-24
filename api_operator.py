@@ -128,14 +128,17 @@ class Operator(object):
                     product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
                 i += 1
 
+            # procedure_result[1] = p_product_id
+            # procedure_result[2] = p_exist_substitutes
+            # procedure_result[3] = p_researched_subsitutes
             procedure_result = self.database_manager.check_if_product_exist_by_bar_code(product['code'])
 
             if procedure_result[1]:
-                # if product already exist in database
+                # if product already exist in database p_researched_subsitutes = 0
                 print('Produit déjà présent dans la base de données.')
                 operateur_result = []
 
-                # if product doesn't have substitutes in database
+                # if product doesn't have substitutes in database and
                 if not procedure_result[2] and not procedure_result[3]:
                     # get substitutes of the current product from the openfoodfacts API
                     substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
