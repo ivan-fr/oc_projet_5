@@ -27,7 +27,7 @@ def _find_words(string):
 class Operator(object):
     # Init url from openfoodfacts api.
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
-    product_url_json = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
+    product_json_url = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
     statistics_marks_for_a_category_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
@@ -176,7 +176,7 @@ class Operator(object):
 
         if request.status_code == 301:
             numero_product = re.search(r'^/product/(\d+)/?[0-9a-zA-Z_\-]*/?$', request.next.path_url).group(1)
-            request = requests.get(self.product_url_json.format(numero_product))
+            request = requests.get(self.product_json_url.format(numero_product))
             request = (request.json()['product'],)
         else:
             request = request.json()
