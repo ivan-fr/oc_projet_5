@@ -192,7 +192,7 @@ class Operator(object):
         return products
 
     def printer(self, products):
-        """Print the data of product and his substitutes."""
+        """Print the data of a product and his substitutes."""
 
         i = 0
         for product in products:
