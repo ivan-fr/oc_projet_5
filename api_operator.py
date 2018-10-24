@@ -50,20 +50,7 @@ class Operator(object):
                 break
 
             if command_choice == '1':
-                while True:
-                    recherche = str(input('Taper votre recherche (tapez "quit" pour quitter) : '))
-                    resultat = []
-
-                    if recherche == "quit":
-                        break
-
-                    if recherche:
-                        resultat = self.research(recherche)
-
-                    if not resultat:
-                        print("Aucun résultat.")
-
-                    print()
+                self.research()
             elif command_choice == 'quit':
                 break
             else:
@@ -94,78 +81,84 @@ class Operator(object):
         self.database_manager.fill_list_from_database(product.get('id'), operateur_result)
         self.printer.printer(operateur_result)
 
-    def research(self, research):
+    def research(self):
         """Research function."""
 
-        # get products from research
-        products = self._get_products(research)
-
-        if not products:
-            return False
-
-        print('Choisir un produit :')
-        range_param = 0
-        for i, product in enumerate(products, start=1):
-            range_param = i
-            print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
-
         while True:
-            product_number = int(input('Choisir un numéro de produit : '))
-            if not (1 <= product_number <= range_param):
+            research = str(input('Taper votre recherche (tapez "quit" pour quitter) : '))
+            research = ' '.join(_find_words(research))
+
+            if research == "quit":
+                break
+
+            # get products from research
+            products = self._get_products(research)
+
+            if not products:
+                print("Aucun résultat.")
                 continue
-            break
 
-        product_number -= 1
-        product = products[product_number]
-
-        i = 0
-        while i <= len(product['categories_tags']) - 1:
-            if ':' in product['categories_tags'][i]:
-                product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
-            i += 1
-
-        procedure_result = self.database_manager.check_if_product_exist_by_bar_code(product['code'])
-
-        if procedure_result[1]:
-            # if product already exist in database
-            print('Produit déjà présent dans la base de données.')
-            operateur_result = []
-
-            # if product doesn't have substitutes in database
-            if not procedure_result[2] and not procedure_result[3]:
-                # get substitutes of the current product from the openfoodfacts API
-                substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
-                self.database_manager._execute_substitutes_sql_database(procedure_result[1], substitutes)
-
-            self.database_manager.fill_list_from_database(procedure_result[1], operateur_result)
-
-            self.printer.printer(operateur_result)
-        else:
-            # get substitutes of the current product from the openfoodfacts API.
-            substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
-
-            # deepcopy for a isolate change
-            operateur_result = [deepcopy(product)]
-
-            if substitutes:
-                operateur_result.extend(deepcopy(substitutes))
-
-            self.printer.printer_adapter_for_terminal(operateur_result)
-            # print product and his subsitutes in the terminal
-            self.printer.printer(operateur_result)
+            print('Choisir un produit :')
+            range_param = 0
+            for i, product in enumerate(products, start=1):
+                range_param = i
+                print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
 
             while True:
-                save_choice = str(input('Sauvergader dans la base de données ? (y/n) '))
-                if save_choice not in ('y', 'n'):
+                product_number = int(input('Choisir un numéro de produit : '))
+                if not (1 <= product_number <= range_param):
                     continue
                 break
 
-            if save_choice == 'y':
-                # save product and his substitutes
-                self.database_manager._execute_product_sql_database(product, substitutes)
-                print('Produit enregistré dans la base de données.')
+            product_number -= 1
+            product = products[product_number]
 
-        return True
+            i = 0
+            while i <= len(product['categories_tags']) - 1:
+                if ':' in product['categories_tags'][i]:
+                    product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
+                i += 1
+
+            procedure_result = self.database_manager.check_if_product_exist_by_bar_code(product['code'])
+
+            if procedure_result[1]:
+                # if product already exist in database
+                print('Produit déjà présent dans la base de données.')
+                operateur_result = []
+
+                # if product doesn't have substitutes in database
+                if not procedure_result[2] and not procedure_result[3]:
+                    # get substitutes of the current product from the openfoodfacts API
+                    substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
+                    self.database_manager._execute_substitutes_sql_database(procedure_result[1], substitutes)
+
+                self.database_manager.fill_list_from_database(procedure_result[1], operateur_result)
+
+                self.printer.printer(operateur_result)
+            else:
+                # get substitutes of the current product from the openfoodfacts API.
+                substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
+
+                # deepcopy for a isolate change
+                operateur_result = [deepcopy(product)]
+
+                if substitutes:
+                    operateur_result.extend(deepcopy(substitutes))
+
+                self.printer.printer_adapter_for_terminal(operateur_result)
+                # print product and his subsitutes in the terminal
+                self.printer.printer(operateur_result)
+
+                while True:
+                    save_choice = str(input('Sauvergader dans la base de données ? (y/n) '))
+                    if save_choice not in ('y', 'n'):
+                        continue
+                    break
+
+                if save_choice == 'y':
+                    # save product and his substitutes
+                    self.database_manager._execute_product_sql_database(product, substitutes)
+                    print('Produit enregistré dans la base de données.')
 
     def _get_products(self, research):
         """Get products from the openfoodfacts API by research"""
