@@ -63,6 +63,8 @@ class Operator(object):
         if not products:
             return False
 
+        print('Choisir un produit :')
+
         range_param = 1
         for i, product in enumerate(products, start=1):
             range_param = i
@@ -102,7 +104,7 @@ class Operator(object):
                 continue
 
             print('Choisir un produit :')
-            range_param = 0
+            range_param = 1
             for i, product in enumerate(products, start=1):
                 range_param = i
                 print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
