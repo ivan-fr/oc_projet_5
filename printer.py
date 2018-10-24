@@ -4,11 +4,11 @@ class Printer(object):
     def printer_adapter_for_terminal(self, products):
         """Join each list in the given product from the openfoodfacts API."""
         for product in products:
-            product['nutrition_grades'] = ', '.join(product.get('nutrition_grades'))
-            product['brands_tags'] = ', '.join(product.get('brands_tags'))
-            product['categories_tags'] = ', '.join(product.get('categories_tags'))
-            product['ingredients'] = ', '.join(ingredient['text'] for ingredient in product.get('ingredients'))
-            product['stores_tags'] = ', '.join(product.get('stores_tags'))
+            product['nutrition_grades'] = ', '.join(product.get('nutrition_grades', ()))
+            product['brands_tags'] = ', '.join(product.get('brands_tags', ()))
+            product['categories_tags'] = ', '.join(product.get('categories_tags', ()))
+            product['ingredients'] = ', '.join(ingredient['text'] for ingredient in product.get('ingredients', ()))
+            product['stores_tags'] = ', '.join(product.get('stores_tags', ()))
 
     def printer(self, products):
         """Print the data of a product and his substitutes."""
