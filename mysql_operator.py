@@ -146,6 +146,7 @@ class Operator(object):
             print('Produit déjà présent dans la base de données.')
             operateur_result = []
 
+            # if product doesn't have substitutes in database
             if not procedure_result[2] and not procedure_result[3]:
                 # get substitutes of the current product from the openfoodfacts API
                 substitutes = self._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
@@ -236,8 +237,8 @@ class Operator(object):
 
         words = " ".join(_find_words(research))
 
-        params = {'search_terms': words, 'search_simple': 1, 'action': 'process', 'page_size': 10, 'json': 1}
-        request = requests.get(self.search_url, params=params, allow_redirects=False)
+        payload = {'search_terms': words, 'search_simple': 1, 'action': 'process', 'page_size': 10, 'json': 1}
+        request = requests.get(self.search_url, params=payload, allow_redirects=False)
 
         if request.status_code == 301:
             numero_product = re.search(r'^/product/(\d+)/?[0-9a-zA-Z_\-]*/?$', request.next.path_url).group(1)
