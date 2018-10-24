@@ -124,7 +124,7 @@ class Operator(object):
                 break
 
             product_number -= 1
-            product = products[product_number]
+            product = products[int(product_number)]
 
             i = 0
             while i <= len(product['categories_tags']) - 1:
