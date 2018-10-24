@@ -113,7 +113,7 @@ class Operator(object):
 
             while True:
                 try:
-                    product_number = input('Choisir un numéro de produit : ')
+                    product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
                     if not (1 <= int(product_number) <= range_param) or product_number != 'quit':
                         raise ValueError()
                 except ValueError:
