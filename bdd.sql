@@ -106,10 +106,7 @@ add constraint ffk_product_store_product_id foreign key (product_id) references 
 
 
 DELIMITER |
-create procedure check_if_product_exist_by_bar_code(in p_code_bar varchar(50),
-													   out p_product_id smallint unsigned,
-												       out p_exist_substitutes boolean,
-													   out p_research_subsitutes boolean)
+create procedure check_if_product_exist_by_bar_code(in p_code_bar varchar(50), out p_product_id smallint unsigned, out p_exist_substitutes boolean, out p_research_subsitutes boolean)
 begin
 	DECLARE EXIT HANDLER FOR NOT FOUND
     begin
