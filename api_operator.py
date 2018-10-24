@@ -61,6 +61,7 @@ class Operator(object):
         products = self.database_manager.get_substitutable_products()
 
         if not products:
+            print('Aucun resultat.')
             return False
 
         print('Choisir un produit :')

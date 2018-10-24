@@ -24,7 +24,6 @@ class DatabaseManager(object):
             products.append(dict(zip(columns, product)))
 
         if not products:
-            print('Aucun resultat.')
             return False
 
         return products

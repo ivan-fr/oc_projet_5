@@ -12,6 +12,7 @@ class Printer(object):
 
     def printer(self, products):
         """Print the data of a product and his substitutes."""
+        print()
 
         i = 0
         for product in products:
