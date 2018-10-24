@@ -78,7 +78,7 @@ class Operator(object):
     def get_substitutable_products(self):
         """Get substitutable products"""
         operateur_result = []
-        self.cursor.execute("SELECT * FROM V_get_substituted_products")
+        self.cursor.execute("SELECT * FROM V_get_substitutable_products")
         fetchall_result = self.cursor.fetchall()
         columns = [column[0] for column in self.cursor.description]
 
@@ -109,7 +109,7 @@ class Operator(object):
     def research(self, research):
         """Research function."""
 
-        # get products
+        # get products from research
         products = self._get_products(research)
 
         if not products:
@@ -142,6 +142,7 @@ class Operator(object):
         procedure_result = self.cursor.callproc('check_if_product_exist_by_bar_code', (product['code'], 0, 0, 0))
 
         if procedure_result[1]:
+            # if product already exist in database
             print('Produit déjà présent dans la base de données.')
             operateur_result = []
 
