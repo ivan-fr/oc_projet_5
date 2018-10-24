@@ -184,7 +184,7 @@ class Operator(object):
             if request['count'] > 0:
                 request = request['products']
             else:
-                return []
+                return None
 
         return request
 
