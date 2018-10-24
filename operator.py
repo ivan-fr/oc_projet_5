@@ -23,6 +23,7 @@ def _find_words(string):
                 i = cursor = i + delta
             i += 1
 
+
 class Operator(object):
     # Init url from openfoodfacts api.
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
@@ -221,3 +222,6 @@ class Operator(object):
                     i += 1
 
         return substitutes
+
+    def close(self):
+        self.database_manager.close()
