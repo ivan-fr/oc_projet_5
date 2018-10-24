@@ -56,6 +56,8 @@ class Operator(object):
             else:
                 self.get_substitutable_products()
 
+        self.database_manager.close()
+
     def get_substitutable_products(self):
         """Get substitutable products"""
         products = self.database_manager.get_substitutable_products()
@@ -227,6 +229,3 @@ class Operator(object):
                     i += 1
 
         return substitutes
-
-    def close(self):
-        self.database_manager.close()
