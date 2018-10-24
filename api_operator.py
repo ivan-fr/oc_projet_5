@@ -38,7 +38,6 @@ class Operator(object):
     def __call__(self, *args, **kwargs):
         # Init main loop for the application.
         while True:
-            print()
             print('1) Remplacer un aliment.')
             print('2) Retrouver mes aliments substituables.')
 

@@ -34,3 +34,5 @@ class Printer(object):
             print('ingredients :', product['ingredients'])
             print('magasins :', product['stores_tags'])
         print("==================")
+
+        print()
