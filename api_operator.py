@@ -38,7 +38,7 @@ class Operator(object):
     def __call__(self, *args, **kwargs):
         # Init main loop for the application.
         while True:
-            print("==================")
+            print()
             print('1) Remplacer un aliment.')
             print('2) Retrouver mes aliments substituables.')
 
@@ -69,8 +69,11 @@ class Operator(object):
             print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
 
         while True:
-            product_number = int(input('Choisir un numéro de produit : '))
-            if not (1 <= product_number <= range_param):
+            try:
+                product_number = int(input('Choisir un numéro de produit : '))
+                if not (1 <= product_number <= range_param):
+                    raise ValueError()
+            except ValueError:
                 continue
             break
 
@@ -105,8 +108,11 @@ class Operator(object):
                 print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
 
             while True:
-                product_number = int(input('Choisir un numéro de produit : '))
-                if not (1 <= product_number <= range_param):
+                try:
+                    product_number = int(input('Choisir un numéro de produit : '))
+                    if not (1 <= product_number <= range_param):
+                        raise ValueError()
+                except ValueError:
                     continue
                 break
 
