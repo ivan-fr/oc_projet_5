@@ -29,7 +29,7 @@ class Operator(object):
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
     product_url_json = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
     product_url = "https://fr.openfoodfacts.org/product/{}"
-    stats_notes_category_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
+    statistics_marks_for_a_category_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
     def __init__(self):
@@ -262,11 +262,11 @@ class Operator(object):
 
         category = categories[-1]
 
-        r2 = requests.get(self.stats_notes_category_url.format(slugify(category)), allow_redirects=False)
+        r2 = requests.get(self.statistics_marks_for_a_category_url.format(slugify(category)), allow_redirects=False)
 
         if r2.status_code == 301:
             category = re.search(r'^/categorie/([0-9a-z_\-]*).json$', r2.next.path_url).group(1)
-            r2 = requests.get(self.stats_notes_category_url.format(category))
+            r2 = requests.get(self.statistics_marks_for_a_category_url.format(category))
 
         r2 = r2.json()
 

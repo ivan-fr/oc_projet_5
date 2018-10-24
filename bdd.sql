@@ -178,9 +178,7 @@ as select product.id,
               end as substitutes_exist,
               product.research_substitutes
     from product
-
     left join product_substitute_product on  product.id = product_substitute_product.product_id_1
-
     where product.research_substitutes = 1
     group by product.id
     having substitutes_exist = 1;
