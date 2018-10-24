@@ -118,7 +118,7 @@ class Operator(object):
                         if not (1 <= int(product_number) <= range_param):
                             raise ValueError()
                 except ValueError:
-                        continue
+                    continue
                 break
 
             if product_number == 'quit':
