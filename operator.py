@@ -45,7 +45,7 @@ class Operator(object):
             # Logical input choices
             while True:
                 command_choice = str(input('Choisir une commande (tapez "quit" pour quitter) : '))
-                if not command_choice in ('1', '2', 'quit'):
+                if command_choice not in ('1', '2', 'quit'):
                     continue
                 break
 
@@ -156,7 +156,7 @@ class Operator(object):
 
             while True:
                 save_choice = str(input('Sauvergader dans la base de données ? (y/n) '))
-                if not save_choice in ('y', 'n'):
+                if save_choice not in ('y', 'n'):
                     continue
                 break
 
