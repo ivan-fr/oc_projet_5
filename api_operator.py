@@ -114,10 +114,11 @@ class Operator(object):
             while True:
                 try:
                     product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
-                    if not (1 <= int(product_number) <= range_param) and product_number != 'quit':
-                        raise ValueError()
+                    if product_number != 'quit':
+                        if not (1 <= int(product_number) <= range_param):
+                            raise ValueError()
                 except ValueError:
-                    continue
+                        continue
                 break
 
             if product_number == 'quit':
