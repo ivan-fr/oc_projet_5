@@ -23,3 +23,26 @@ Si l'utilisateur sélectionne 2, le programme affiche la liste des produits subs
 - Selectionner l'aliment [Plusieurs propositions associées à un chiffre. L'utilisateur entre le chiffre correspondant à l'aliment choisi et appuie sur entrée]
 - Le programme retourne l'aliment et ses substituts.
 - L'utilisateur est renvoyé sur la sélection des commandes.
+
+# Setup
+## 1 - Configuration de la base de données
+
+### constant.py
+clé | valeur
+----- | ---------------
+host | Database host
+database | database name
+user | user login
+password | user password (if needed) 
+
+## 2 - Requirements
+*  **Python 3.x**.
+* utiliser une base de données MySQL
+
+### Installation 
+* Download ou clone le repository.
+* Install dépendances : `pip install -r requirements.txt`
+* Utiliser un **environnement virtuel** est recommandé.
+
+## 3 - Lancer le programme 
+* Executer : `python terminal.py`  depuis la console

@@ -1,4 +1,4 @@
-from constant import *
+from constants import *
 import mysql.connector
 
 
