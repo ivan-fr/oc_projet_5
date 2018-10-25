@@ -2,6 +2,7 @@ from copy import deepcopy
 from database_manager import DatabaseManager
 from api_operator import Operator
 
+
 class Printer(object):
     product_url = "https://fr.openfoodfacts.org/product/{}"
 
@@ -127,7 +128,8 @@ class Printer(object):
                 # if product doesn't have substitutes in database and
                 if not procedure_result[2] and not procedure_result[3]:
                     # get substitutes of the current product from the openfoodfacts API
-                    substitutes = self.api_operator._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
+                    substitutes = self.api_operator._get_substitutes(product['categories_tags'],
+                                                                     product.get('nutrition_grade', 'e'))
                     self.database_manager._execute_substitutes_sql_database(procedure_result[1], substitutes)
 
                 self.database_manager.fill_list_from_database(procedure_result[1], operateur_result)
@@ -135,7 +137,8 @@ class Printer(object):
                 self.printer(operateur_result)
             else:
                 # get substitutes of the current product from the openfoodfacts API.
-                substitutes = self.api_operator._get_substitutes(product['categories_tags'], product.get('nutrition_grade', 'e'))
+                substitutes = self.api_operator._get_substitutes(product['categories_tags'],
+                                                                 product.get('nutrition_grade', 'e'))
 
                 # deepcopy for a isolate change
                 operateur_result = [deepcopy(product)]
