@@ -20,7 +20,7 @@ def _find_words(string):
             i += 1
 
 
-class Operator(object):
+class ApiOperator(object):
     # Init url from openfoodfacts api.
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
     product_json_url = "http://fr.openfoodfacts.org/api/v0/product/{}.json"

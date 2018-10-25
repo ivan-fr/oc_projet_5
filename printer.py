@@ -1,13 +1,13 @@
 from copy import deepcopy
 from database_manager import DatabaseManager
-from api_operator import Operator
+from api_operator import ApiOperator
 
 
 class Printer(object):
     product_url = "https://fr.openfoodfacts.org/product/{}"
 
     def __init__(self):
-        self.api_operator = Operator()
+        self.api_operator = ApiOperator()
 
     def __call__(self, *args, **kwargs):
         self.database_manager = DatabaseManager()
