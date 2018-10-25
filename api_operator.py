@@ -3,7 +3,6 @@ import requests
 from copy import deepcopy
 from slugify import slugify
 
-
 from printer import Printer
 from database_manager import DatabaseManager
 
@@ -132,8 +131,9 @@ class Operator(object):
 
             product_number = int(product_number)
             product_number -= 1
-            product = products[int(product_number)]
+            product = products[product_number]
 
+            # wash categories_tag
             i = 0
             while i <= len(product['categories_tags']) - 1:
                 if ':' in product['categories_tags'][i]:
@@ -228,14 +228,5 @@ class Operator(object):
             r3 = requests.get(self.product_marks_url.format(slugify(category), r2['tags'][0]['id']))
             r3 = r3.json()
             substitutes = r3['products'][:5]
-
-        # wash categories tags
-        if substitutes:
-            for substitut in substitutes:
-                i = 0
-                while i <= len(substitut['categories_tags']) - 1:
-                    if ':' in substitut['categories_tags'][i]:
-                        substitut['categories_tags'][i] = (substitut['categories_tags'][i].split(':'))[1]
-                    i += 1
 
         return substitutes

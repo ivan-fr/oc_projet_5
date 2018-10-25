@@ -69,7 +69,7 @@ class DatabaseManager(object):
 
         r_id = self.cursor.lastrowid
 
-        for category in product.get('categories_tags', ''):
+        for category in product.get('categories', '').split(','):
             sql = "INSERT INTO category (name) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
             val = (category,)
             self.cursor.execute(sql, val)

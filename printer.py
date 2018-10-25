@@ -30,7 +30,7 @@ class Printer(object):
             print("nom généric :", product.get('generic_name'))
             print("marques :", product['brands_tags'])
             print('nutrition grade :', product['nutrition_grades'].upper())
-            print('categories :', product['categories_tags'])
+            print('categories :', product['categories'])
             print('ingredients :', product['ingredients'])
             print('magasins :', product['stores_tags'])
         print("==================")
