@@ -1,5 +1,5 @@
-from api_operator import Operator
+from printer import Printer
 
 if __name__ == '__main__':
-    operateur = Operator()
-    operateur()
+    _printer = Printer()
+    _printer()
