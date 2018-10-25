@@ -32,10 +32,11 @@ class Operator(object):
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
     def __init__(self):
-        self.database_manager = DatabaseManager()
         self.printer = Printer()
 
     def __call__(self, *args, **kwargs):
+        self.database_manager = DatabaseManager()
+
         # Init main loop for the application.
         while True:
             print('1) Remplacer un aliment.')
