@@ -1,8 +1,9 @@
 import re
-from copy import deepcopy
-
 import requests
+from copy import deepcopy
 from slugify import slugify
+
+
 from printer import Printer
 from database_manager import DatabaseManager
 
@@ -63,7 +64,7 @@ class Operator(object):
 
         if not products:
             print('Aucun resultat.')
-            return False
+            return
 
         print('Choisir un produit :')
 
