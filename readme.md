@@ -46,3 +46,5 @@ password | user password (if needed)
 
 ## 3 - Lancer le programme 
 * Executer : `python terminal.py`  depuis la console
+
+## 4 - [Lien trello](https://trello.com/b/JoVMG8ls/)
