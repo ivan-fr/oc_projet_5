@@ -1,7 +1,7 @@
 Utilisez les données publiques de l'OpenFoodFacts
 -
 
-Cahier des charges
+Cahier des charges [Lien trello](https://trello.com/b/JoVMG8ls/)
 
 Description du parcours utilisateur
 
@@ -25,26 +25,29 @@ Si l'utilisateur sélectionne 2, le programme affiche la liste des produits subs
 - L'utilisateur est renvoyé sur la sélection des commandes.
 
 # Setup
-## 1 - Configuration de la base de données
 
-### constant.py
-clé | valeur
------ | ---------------
-host | Database host
-database | database name
-user | user login
-password | user password (if needed) 
-
-## 2 - Requirements
+## 1 - Requirements
 *  **Python 3.x**.
 * utiliser une base de données MySQL
 
 ### Installation 
 * Download ou clone le repository.
-* Install dépendances : `pip install -r requirements.txt`
+* Installer les dépendances : `pip install -r requirements.txt`
 * Utiliser un **environnement virtuel** est recommandé.
+
+## 2 - Configuration de la base de données
+
+* créer une database MySQL "openfoodfacts"
+* connectez-vous à la base de données avec tout les droits
+* executer le fichier bdd.sql
+
+### constant.py
+clé | valeur
+----- | ---------------
+host | Database host
+database | database name (par défault openfoodfacts)
+user | user login
+password | user password (si besoin) 
 
 ## 3 - Lancer le programme 
 * Executer : `python terminal.py`  depuis la console
-
-## 4 - [Lien trello](https://trello.com/b/JoVMG8ls/)
