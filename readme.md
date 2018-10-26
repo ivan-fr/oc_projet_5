@@ -32,8 +32,11 @@ Si l'utilisateur sélectionne 2, le programme affiche la liste des produits subs
 
 ### Installation 
 * Download ou clone le repository.
-* Installer les dépendances : `pip install -r requirements.txt`
 * Utiliser un **environnement virtuel** est recommandé.
+    * Exécuter la ligne de commande : `python3 -m venv /path/to/new/virtual/environment`  
+    puis `source <path/to/venv>/bin/activate` depuis MacOS  
+    ou `<path/to/venv>\Scripts\activate.bat`depuis Windows
+* Installer les dépendances : `pip install -r requirements.txt`
 
 ## 2 - Configuration de la base de données
 
