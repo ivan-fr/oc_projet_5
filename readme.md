@@ -50,4 +50,4 @@ user | user login
 password | user password (si besoin) 
 
 ## 3 - Lancer le programme 
-* Executer : `python terminal.py`  depuis la console
+* Exécuter : `python terminal.py`  depuis la console
