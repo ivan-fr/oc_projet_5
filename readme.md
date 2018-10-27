@@ -48,7 +48,7 @@ Si l'utilisateur sélectionne 2, le programme affiche la liste des produits subs
 clé | valeur
 ----- | ---------------
 host | Database host
-database | database name (par défault openfoodfacts)
+database | database name (par défaut openfoodfacts)
 user | user login
 password | user password (si besoin) 
 

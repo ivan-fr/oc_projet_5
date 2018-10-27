@@ -125,7 +125,7 @@ class Printer(object):
                 break
 
             if product_number == 'quit':
-                break
+                continue
 
             product_number = int(product_number)
             product_number -= 1
