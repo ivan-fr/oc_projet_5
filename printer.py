@@ -4,6 +4,23 @@ from api_operator import ApiOperator
 from termcolor import cprint
 
 
+def _find_words(string):
+    """Get words from a sentence."""
+    if string:
+        cursor, i, string = 0, 0, string + " "
+        while i <= len(string) - 1:
+            if string[i] in (' ', '\n', ',', '.', ')', ']'):
+                if i - 1 >= cursor:
+                    yield string[cursor:i]
+                delta = 1
+                while i + delta <= len(string) - 1:
+                    if string[i + delta] not in (' ', '\n', ',', '.', '?', '!', '[', ']', '(', ')'):
+                        break
+                    delta += 1
+                i = cursor = i + delta
+            i += 1
+
+
 class Printer(object):
     product_url = "https://fr.openfoodfacts.org/product/{}"
 
@@ -69,13 +86,15 @@ class Printer(object):
 
         operateur_result = []
         self.database_manager.fill_list_from_database(product.get('id'), operateur_result)
+
+        # print product and his subsitutes in the terminal
         self.printer(operateur_result)
 
     def research(self):
         """Research function."""
 
         while True:
-            research = str(input('Taper votre recherche (tapez "quit" pour quitter) : '))
+            research = " ".join(_find_words(str(input('Taper votre recherche (tapez "quit" pour quitter) : '))))
 
             if research == "quit":
                 break
@@ -94,6 +113,7 @@ class Printer(object):
                 cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
                        'blue')
 
+            # Logical input choices
             while True:
                 product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
                 if product_number != 'quit':

@@ -3,23 +3,6 @@ import requests
 from slugify import slugify
 
 
-def _find_words(string):
-    """Get words from a sentence."""
-    if string:
-        cursor, i, string = 0, 0, string + " "
-        while i <= len(string) - 1:
-            if string[i] in (' ', '\n', ',', '.', ')'):
-                if i - 1 >= cursor:
-                    yield string[cursor:i]
-                delta = 1
-                while i + delta <= len(string) - 1:
-                    if string[i + delta] not in (' ', '\n', ',', '.', '?', '!', '[', ']', '(', ')'):
-                        break
-                    delta += 1
-                i = cursor = i + delta
-            i += 1
-
-
 class ApiOperator(object):
     """this class communicates with the api of openfoodfacts"""
 
@@ -32,9 +15,7 @@ class ApiOperator(object):
     def _get_products(self, research):
         """Get products from the openfoodfacts API by research"""
 
-        words = " ".join(_find_words(research))
-
-        payload = {'search_terms': words, 'search_simple': 1, 'action': 'process', 'page_size': 10, 'json': 1}
+        payload = {'search_terms': research, 'search_simple': 1, 'action': 'process', 'page_size': 10, 'json': 1}
         request = requests.get(self.search_url, params=payload, allow_redirects=False)
 
         if request.status_code == 301:
