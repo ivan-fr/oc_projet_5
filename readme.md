@@ -28,7 +28,7 @@ Si l'utilisateur sélectionne 2, le programme affiche la liste des produits subs
 
 ## 1 - Requirements
 *  **Python 3.x**.
-* utiliser une base de données MySQL
+* Utiliser une base de données MySQL
 
 ### Installation 
 * Download ou clone le repository.

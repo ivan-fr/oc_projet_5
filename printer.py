@@ -166,7 +166,6 @@ class Printer(object):
         for product in products:
             product['nutrition_grades'] = ', '.join(product.get('nutrition_grades', ()))
             product['brands_tags'] = ', '.join(product.get('brands_tags', ()))
-            product['categories_tags'] = ', '.join(product.get('categories_tags', ()))
             product['ingredients'] = ', '.join(ingredient['text'] for ingredient in product.get('ingredients', ()))
             product['stores_tags'] = ', '.join(product.get('stores_tags', ()))
 
