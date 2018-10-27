@@ -162,7 +162,7 @@ class Printer(object):
                     cprint('Produit enregistré dans la base de données.', 'red')
 
     def printer_adapter_for_terminal(self, products):
-        """Join each list in the given product from the openfoodfacts API."""
+        """Join each list in the given product from the openfoodfacts API for the printer function"""
         for product in products:
             product['nutrition_grades'] = ', '.join(product.get('nutrition_grades', ()))
             product['brands_tags'] = ', '.join(product.get('brands_tags', ()))
@@ -170,12 +170,12 @@ class Printer(object):
             product['stores_tags'] = ', '.join(product.get('stores_tags', ()))
 
     def printer(self, products):
-        """Print the data of a product and his substitutes."""
+        """Print the data of a product and its substitutes."""
         print()
 
         i = 0
         for product in products:
-            if not i == 0:
+            if i != 0:
                 cprint("========", 'green')
                 print("Substitut produit")
             else:

@@ -58,7 +58,6 @@ class ApiOperator(object):
             return substitutes
 
         category = categories[-1]
-        print('------------>', category)
 
         r2 = requests.get(self.statistics_marks_for_a_category_url.format(slugify(category)), allow_redirects=False)
 
