@@ -49,13 +49,13 @@ class Printer(object):
             cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''), 'blue')
 
         while True:
-            try:
-                product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
-                if product_number != 'quit':
+            product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
+            if product_number != 'quit':
+                try:
                     if not (1 <= int(product_number) <= range_param):
-                        raise ValueError()
-            except ValueError:
-                continue
+                        continue
+                except ValueError:
+                    continue
             break
 
         if product_number == 'quit':
