@@ -82,7 +82,7 @@ class Printer(object):
             products = self.api_operator._get_products(research)
 
             if not products:
-                print("Aucun résultat.")
+                cprint("Aucun résultat.", "red")
                 continue
 
             print('Choisir un produit :')
@@ -92,13 +92,13 @@ class Printer(object):
                 cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''), 'blue')
 
             while True:
-                try:
-                    product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
-                    if product_number != 'quit':
-                        if not (1 <= int(product_number) <= range_param):
-                            raise ValueError()
-                except ValueError:
-                    continue
+                product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
+                if product_number != 'quit':
+                        try:
+                            if not (1 <= int(product_number) <= range_param):
+                                continue
+                        except ValueError:
+                            continue
                 break
 
             if product_number == 'quit':

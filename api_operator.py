@@ -21,6 +21,8 @@ def _find_words(string):
 
 
 class ApiOperator(object):
+    """this class communicates with the api of openfoodfacts"""
+
     # Init url from openfoodfacts api.
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
     product_json_url = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
