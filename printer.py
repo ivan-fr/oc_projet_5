@@ -1,7 +1,7 @@
 from copy import deepcopy
 from database_manager import DatabaseManager
 from api_operator import ApiOperator
-
+from termcolor import cprint
 
 class Printer(object):
     product_url = "https://fr.openfoodfacts.org/product/{}"
@@ -14,8 +14,8 @@ class Printer(object):
 
         # Init main loop for the application.
         while True:
-            print('1) Remplacer un aliment.')
-            print('2) Retrouver mes aliments substituables.')
+            cprint('1) Remplacer un aliment.', 'white', 'on_blue')
+            cprint('2) Retrouver mes aliments substituables.', 'white', 'on_blue')
 
             # Logical input choices
             while True:
@@ -24,10 +24,10 @@ class Printer(object):
                     continue
                 break
 
-            if command_choice == '1':
-                self.research()
-            elif command_choice == 'quit':
+            if command_choice == 'quit':
                 break
+            elif command_choice == '1':
+                self.research()
             else:
                 self.get_substitutable_products()
 
@@ -38,7 +38,7 @@ class Printer(object):
         products = self.database_manager.get_substitutable_products()
 
         if not products:
-            print('Aucun resultat.')
+            cprint('Aucun resultat.', 'red')
             return
 
         print('Choisir un produit :')
@@ -46,7 +46,7 @@ class Printer(object):
         range_param = 1
         for i, product in enumerate(products, start=1):
             range_param = i
-            print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
+            cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''), 'blue')
 
         while True:
             try:
@@ -89,7 +89,7 @@ class Printer(object):
             range_param = 1
             for i, product in enumerate(products, start=1):
                 range_param = i
-                print(str(i) + ')', product.get('product_name', ''), '-', product.get('generic_name', ''))
+                cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''), 'blue')
 
             while True:
                 try:
@@ -125,7 +125,7 @@ class Printer(object):
                 print('Produit déjà présent dans la base de données.')
                 operateur_result = []
 
-                # if product doesn't have substitutes in database and
+                # if product doesn't have substitutes in database
                 if not procedure_result[2] and not procedure_result[3]:
                     # get substitutes of the current product from the openfoodfacts API
                     substitutes = self.api_operator._get_substitutes(product['categories_tags'],
@@ -159,7 +159,7 @@ class Printer(object):
                 if save_choice == 'y':
                     # save product and his substitutes
                     self.database_manager._execute_product_sql_database(product, substitutes)
-                    print('Produit enregistré dans la base de données.')
+                    cprint('Produit enregistré dans la base de données.', 'red')
 
     def printer_adapter_for_terminal(self, products):
         """Join each list in the given product from the openfoodfacts API."""
@@ -176,10 +176,10 @@ class Printer(object):
         i = 0
         for product in products:
             if not i == 0:
-                print("========")
+                cprint("========", 'green')
                 print("Substitut produit")
             else:
-                print("==================")
+                cprint("==================", 'blue')
                 print("Résultat produit")
                 i += 1
 
@@ -192,6 +192,6 @@ class Printer(object):
             print('categories :', product['categories'])
             print('ingredients :', product['ingredients'])
             print('magasins :', product['stores_tags'])
-        print("==================")
+        cprint("==================", 'blue')
 
         print()
