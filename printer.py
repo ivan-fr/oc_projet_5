@@ -94,11 +94,11 @@ class Printer(object):
             while True:
                 product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
                 if product_number != 'quit':
-                        try:
-                            if not (1 <= int(product_number) <= range_param):
-                                continue
-                        except ValueError:
+                    try:
+                        if not (1 <= int(product_number) <= range_param):
                             continue
+                    except ValueError:
+                        continue
                 break
 
             if product_number == 'quit':
