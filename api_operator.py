@@ -35,7 +35,7 @@ class ApiOperator(object):
     def _get_substitutes(self, categories, nutrition_grades):
         """Get the best substitutes for a category"""
 
-        substitutes = None
+        substitutes = []
 
         if not categories:
             return substitutes
@@ -50,9 +50,13 @@ class ApiOperator(object):
 
         r2 = r2.json()
 
-        if r2['count'] > 0 and r2['tags'][0]['id'] < nutrition_grades:
-            r3 = requests.get(self.product_marks_url.format(slugify(category), r2['tags'][0]['id']))
-            r3 = r3.json()
-            substitutes = r3['products'][:5]
+        if r2['count'] > 0:
+            i_substitutes, i_mark = 0, 0
+            while i_substitutes <= 4 and i_mark <= r2['count'] - 1 and r2['tags'][i_mark]['id'] < nutrition_grades:
+                r3 = requests.get(self.product_marks_url.format(slugify(category), r2['tags'][i_mark]['id']))
+                r3 = r3.json()
+                substitutes += r3['products'][:5 - i_substitutes]
+                i_substitutes += len(r3['products'][:5 - i_substitutes])
+                i_mark += 1
 
         return substitutes
