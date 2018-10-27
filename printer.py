@@ -3,6 +3,7 @@ from database_manager import DatabaseManager
 from api_operator import ApiOperator
 from termcolor import cprint
 
+
 class Printer(object):
     product_url = "https://fr.openfoodfacts.org/product/{}"
 
@@ -48,6 +49,7 @@ class Printer(object):
             range_param = i
             cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''), 'blue')
 
+        # Logical input choices
         while True:
             product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
             if product_number != 'quit':
@@ -89,7 +91,8 @@ class Printer(object):
             range_param = 1
             for i, product in enumerate(products, start=1):
                 range_param = i
-                cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''), 'blue')
+                cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
+                       'blue')
 
             while True:
                 product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
