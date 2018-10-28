@@ -129,64 +129,68 @@ class Printer(object):
 
             product_number = int(product_number)
             product_number -= 1
-            product = products[product_number]
+            self.render(products[product_number])
 
-            # wash categories_tag
-            i = 0
-            while i <= len(product['categories_tags']) - 1:
-                if ':' in product['categories_tags'][i]:
-                    product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
-                i += 1
+    def render(self, product):
+        # wash categories_tag and categories key
+        product['categories'] = product['categories'].spli(',')
+        i = 0
+        while i <= len(product['categories_tags']) - 1:
+            if ':' in product['categories_tags'][i]:
+                product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
+            if ':' in product['categories'][i]:
+                product['categories'][i] = (product['categories'][i].split(':'))[1]
+            i += 1
 
-            # procedure_result[1] = p_product_id
-            # procedure_result[2] = p_exist_substitutes
-            # procedure_result[3] = p_researched_subsitutes
-            procedure_result = self.database_manager.check_if_product_exist_by_bar_code(product['code'])
+        # procedure_result[1] = p_product_id
+        # procedure_result[2] = p_exist_substitutes
+        # procedure_result[3] = p_researched_subsitutes
+        procedure_result = self.database_manager.check_if_product_exist_by_bar_code(product['code'])
 
-            if procedure_result[1]:
-                # if product already exist in database p_researched_subsitutes = 0
-                print('Produit déjà présent dans la base de données.')
-                operateur_result = []
+        if procedure_result[1]:
+            # if product already exist in database p_researched_subsitutes = 0
+            print('Produit déjà présent dans la base de données.')
 
-                # if product doesn't have substitutes in database
-                if not procedure_result[2] and not procedure_result[3]:
-                    # get substitutes of the current product from the openfoodfacts API
-                    substitutes = self.api_operator._get_substitutes(product['categories_tags'],
-                                                                     product.get('nutrition_grade', 'e'))
-                    self.database_manager._execute_substitutes_sql_database(procedure_result[1], substitutes)
-
-                self.database_manager.fill_list_from_database(procedure_result[1], operateur_result)
-
-                self.printer(operateur_result)
-            else:
-                # get substitutes of the current product from the openfoodfacts API.
+            # if product doesn't have substitutes in database
+            if not procedure_result[2] and not procedure_result[3]:
+                # get substitutes of the current product from the openfoodfacts API
                 substitutes = self.api_operator._get_substitutes(product['categories_tags'],
                                                                  product.get('nutrition_grade', 'e'))
+                self.database_manager._execute_substitutes_sql_database(procedure_result[1], substitutes)
 
-                # deepcopy for a isolate change
-                operateur_result = [deepcopy(product)]
+            operateur_result = []
+            self.database_manager.fill_list_from_database(procedure_result[1], operateur_result)
+            self.printer(operateur_result)
+        else:
+            # get substitutes of the current product from the openfoodfacts API.
+            substitutes = self.api_operator._get_substitutes(product['categories_tags'],
+                                                             product.get('nutrition_grade', 'e'))
 
-                if substitutes:
-                    operateur_result.extend(deepcopy(substitutes))
+            # deepcopy for a isolate change
+            operateur_result = [deepcopy(product)]
 
-                self.printer_adapter_for_terminal(operateur_result)
-                # print product and his subsitutes in the terminal
-                self.printer(operateur_result)
+            if substitutes:
+                operateur_result.extend(deepcopy(substitutes))
 
-                while True:
-                    save_choice = str(input('Sauvergader dans la base de données ? (y/n) '))
-                    if save_choice not in ('y', 'n'):
-                        continue
-                    break
+            self.printer_adapter_for_terminal(operateur_result)
+            # print product and his subsitutes in the terminal
+            self.printer(operateur_result)
 
-                if save_choice == 'y':
-                    # save product and his substitutes
-                    self.database_manager._execute_product_sql_database(product, substitutes)
-                    cprint('Produit enregistré dans la base de données.', 'red')
+            while True:
+                save_choice = str(input('Sauvergader dans la base de données ? (y/n) '))
+                if save_choice not in ('y', 'n'):
+                    continue
+                break
+
+            if save_choice == 'y':
+                # save product and his substitutes
+                self.database_manager._execute_product_sql_database(product, substitutes)
+                cprint('Produit enregistré dans la base de données.', 'red')
 
     def printer_adapter_for_terminal(self, products):
         """Join each list in the given product from the openfoodfacts API for the printer function"""
         for product in products:
+            product['categories'] = ', '.join(product.get('categories', ()))
             product['brands_tags'] = ', '.join(product.get('brands_tags', ()))
             product['ingredients'] = ', '.join(ingredient['text'] for ingredient in product.get('ingredients', ()))
             product['stores_tags'] = ', '.join(product.get('stores_tags', ()))

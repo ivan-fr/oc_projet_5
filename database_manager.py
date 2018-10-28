@@ -23,9 +23,6 @@ class DatabaseManager(object):
         for i, product in enumerate(fetchall_result, start=1):
             products.append(dict(zip(columns, product)))
 
-        if not products:
-            return False
-
         return products
 
     def get_product_detail(self, product_id):
@@ -69,7 +66,7 @@ class DatabaseManager(object):
 
         r_id = self.cursor.lastrowid
 
-        for category in product.get('categories', '').split(','):
+        for category in product.get('categories', ''):
             sql = "INSERT INTO category (name) VALUES (%s) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);"
             val = (category,)
             self.cursor.execute(sql, val)

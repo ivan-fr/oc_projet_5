@@ -59,4 +59,13 @@ class ApiOperator(object):
                 i_substitutes += len(r3['products'][:5 - i_substitutes])
                 i_mark += 1
 
+        # wash categories keys
+        for substitute in substitutes:
+            substitute['categories'] = substitute['categories'].spli(',')
+            i = 0
+            while i <= len(substitute['categories']) - 1:
+                if ':' in substitute['categories'][i]:
+                    substitute['categories'][i] = (substitute['categories'][i].split(':'))[1]
+                i += 1
+
         return substitutes
