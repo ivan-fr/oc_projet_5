@@ -32,16 +32,10 @@ class ApiOperator(object):
 
         return request
 
-    def _get_substitutes(self, categories, nutrition_grades):
+    def _get_substitutes(self, category, nutrition_grades):
         """Get the best substitutes for a category"""
 
         substitutes = []
-
-        if not categories:
-            return substitutes
-
-        category = categories[-1]
-
         r2 = requests.get(self.statistics_marks_for_a_category_url.format(slugify(category)), allow_redirects=False)
 
         if r2.status_code == 301:
