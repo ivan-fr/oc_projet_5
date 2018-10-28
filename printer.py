@@ -66,7 +66,7 @@ class Printer(object):
             range_param = i
             cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''), 'blue')
 
-        # Logical input choices
+        # a loop for input choices
         while True:
             product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
             if product_number != 'quit':
@@ -99,7 +99,7 @@ class Printer(object):
             if research == "quit":
                 break
 
-            # get products from research
+            # get products with research from openfoodfacts api
             products = self.api_operator._get_products(research)
 
             if not products:
@@ -113,7 +113,7 @@ class Printer(object):
                 cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
                        'blue')
 
-            # Logical input choices
+            # a loop for input choices
             while True:
                 product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
                 if product_number != 'quit':
