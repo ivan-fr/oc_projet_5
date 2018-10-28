@@ -61,7 +61,7 @@ class ApiOperator(object):
 
         # wash categories keys
         for substitute in substitutes:
-            substitute['categories'] = substitute['categories'].spli(',')
+            substitute['categories'] = substitute['categories'].split(',')
             i = 0
             while i <= len(substitute['categories']) - 1:
                 if ':' in substitute['categories'][i]:

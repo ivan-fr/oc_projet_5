@@ -133,7 +133,7 @@ class Printer(object):
 
     def render(self, product):
         # wash categories_tag and categories key
-        product['categories'] = product['categories'].spli(',')
+        product['categories'] = product['categories'].split(',')
         i = 0
         while i <= len(product['categories_tags']) - 1:
             if ':' in product['categories_tags'][i]:
