@@ -19,7 +19,9 @@ class ApiOperator(object):
         request = requests.get(self.search_url, params=payload, allow_redirects=False)
 
         if request.status_code == 301:
-            numero_product = re.search(r'^/product/(\d+)/?[0-9a-zA-Z_\-]*/?$', request.next.path_url).group(1)
+            print(request.next.path_url)
+            numero_product = re.search(r'^\/(produit|product)\/(\d+)\/?[0-9a-zA-Z_\-]*\/?$',
+                                       request.next.path_url).group(2)
             request = requests.get(self.product_json_url.format(numero_product))
             request = (request.json()['product'],)
         else:
