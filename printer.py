@@ -127,8 +127,7 @@ class Printer(object):
             if product_number == 'quit':
                 continue
 
-            product_number = int(product_number)
-            product_number -= 1
+            product_number = int(product_number) - 1
             self.render(products[product_number])
 
     def render(self, product):
