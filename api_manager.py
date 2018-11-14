@@ -3,7 +3,7 @@ import requests
 from slugify import slugify
 
 
-class ApiOperator(object):
+class ApiManager(object):
     """this class communicates with the api of openfoodfacts"""
 
     # Init url from openfoodfacts api.

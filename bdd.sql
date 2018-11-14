@@ -165,7 +165,7 @@ end|
 DELIMITER ;
 
 create or replace view V_get_substitutable_products
-as select product.id, 
+as select product.id,
 			  product.product_name,
 			  product.generic_name,
               product.bar_code_unique as code,

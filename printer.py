@@ -1,6 +1,6 @@
 from copy import deepcopy
 from database_manager import DatabaseManager
-from api_operator import ApiOperator
+from api_manager import ApiManager
 from termcolor import cprint
 
 
@@ -25,7 +25,7 @@ class Printer(object):
     product_url = "https://fr.openfoodfacts.org/product/{}"
 
     def __init__(self):
-        self.api_operator = ApiOperator()
+        self.api_operator = ApiManager()
 
     def __call__(self, *args, **kwargs):
         self.database_manager = DatabaseManager()

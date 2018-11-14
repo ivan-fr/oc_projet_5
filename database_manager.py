@@ -17,7 +17,7 @@ class DatabaseManager(object):
 
         self.cursor.execute("SELECT * FROM V_get_substitutable_products")
         fetchall_result = self.cursor.fetchall()
-        columns = [column[0] for column in self.cursor.description]
+        columns = tuple(column[0] for column in self.cursor.description)
 
         products = []
         for i, product in enumerate(fetchall_result, start=1):
