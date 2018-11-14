@@ -131,13 +131,13 @@ class Printer(object):
 
     def render(self, product):
         # wash categories_tag and categories
-        product['categories'] = product['categories'].split(',')
         i = 0
         while i <= len(product['categories_tags']) - 1:
             if ':' in product['categories_tags'][i]:
                 product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
             i += 1
 
+        product['categories'] = product['categories'].split(',')
         i = 0
         while i <= len(product['categories']) - 1:
             if ':' in product['categories'][i]:

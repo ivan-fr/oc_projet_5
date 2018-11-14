@@ -193,9 +193,9 @@ class DatabaseManager(object):
     def _execute_substitutes_sql_database(self, product_id, substitutes):
         # save relationship beetween products
         if substitutes is not None:
-            for substitution in substitutes:
+            for substitute in substitutes:
 
-                substitution_id = self._execute_product_sql_database(substitution, None)
+                substitution_id = self._execute_product_sql_database(substitute, None)
 
                 if product_id != substitution_id:
                     sql = "INSERT INTO product_substitute_product (product_id_1, product_id_2) " \
