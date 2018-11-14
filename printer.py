@@ -1,6 +1,5 @@
 from copy import deepcopy
-from database_manager import DatabaseManager
-from api_manager import ApiManager
+from managers import ApiManager, DatabaseManager
 from termcolor import cprint
 
 
@@ -85,7 +84,7 @@ class Printer(object):
         product = products[product_number]
 
         operateur_result = []
-        self.database_manager.fill_list_from_database(product.get('id'), operateur_result)
+        self.database_manager.fill_list_with_product_and_substitutes(product.get('id'), operateur_result)
 
         # print product and his subsitutes in the terminal
         self.printer(operateur_result)
@@ -131,12 +130,16 @@ class Printer(object):
             self.render(products[product_number])
 
     def render(self, product):
-        # wash categories_tag and categories key
+        # wash categories_tag and categories
         product['categories'] = product['categories'].split(',')
         i = 0
         while i <= len(product['categories_tags']) - 1:
             if ':' in product['categories_tags'][i]:
                 product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
+            i += 1
+
+        i = 0
+        while i <= len(product['categories']) - 1:
             if ':' in product['categories'][i]:
                 product['categories'][i] = (product['categories'][i].split(':'))[1]
             i += 1
@@ -158,7 +161,7 @@ class Printer(object):
                 self.database_manager._execute_substitutes_sql_database(procedure_result[1], substitutes)
 
             operateur_result = []
-            self.database_manager.fill_list_from_database(procedure_result[1], operateur_result)
+            self.database_manager.fill_list_with_product_and_substitutes(procedure_result[1], operateur_result)
             self.printer(operateur_result)
         else:
             # get substitutes of the current product from the openfoodfacts API.
@@ -186,7 +189,8 @@ class Printer(object):
                 self.database_manager._execute_product_sql_database(product, substitutes)
                 cprint('Produit enregistré dans la base de données.', 'red')
 
-    def printer_adapter_for_terminal(self, products):
+    @staticmethod
+    def printer_adapter_for_terminal(products):
         """Join each list in the given product from the openfoodfacts API for the printer function"""
         for product in products:
             product['categories'] = ', '.join(product.get('categories', ()))
@@ -194,7 +198,8 @@ class Printer(object):
             product['ingredients'] = ', '.join(ingredient['text'] for ingredient in product.get('ingredients', ()))
             product['stores_tags'] = ', '.join(product.get('stores_tags', ()))
 
-    def printer(self, products):
+    @classmethod
+    def printer(cls, products):
         """Print the data of a product and its substitutes."""
         print()
 
@@ -209,7 +214,7 @@ class Printer(object):
                 i += 1
 
             print(product['product_name'], '|', "code_bar :", product['code'],
-                  '|', self.product_url.format(product['code']))
+                  '|', cls.product_url.format(product['code']))
 
             print("nom généric :", product.get('generic_name'))
             print("marques :", product['brands_tags'])

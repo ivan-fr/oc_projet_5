@@ -1,6 +1,74 @@
 from constants import *
 import mysql.connector
 
+import re
+import requests
+from slugify import slugify
+
+
+class ApiManager(object):
+    """this class communicates with the api of openfoodfacts"""
+
+    # Init url from openfoodfacts api.
+    search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
+    product_json_url = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
+    statistics_marks_for_a_category_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
+    product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
+
+    def _get_products(self, research):
+        """Get products from the openfoodfacts API by research"""
+
+        payload = {'search_terms': research, 'search_simple': 1, 'action': 'process', 'page_size': 10, 'json': 1}
+        request = requests.get(self.search_url, params=payload, allow_redirects=False)
+
+        if request.status_code == 301:
+            print(request.next.path_url)
+            numero_product = re.search(r'^/(produit|product)/(\d+)/?[0-9a-zA-Z_\-]*/?$',
+                                       request.next.path_url).group(2)
+            request = requests.get(self.product_json_url.format(numero_product))
+            request = (request.json()['product'],)
+        else:
+            request = request.json()
+
+            if request['count'] > 0:
+                request = request['products']
+            else:
+                return None
+
+        return request
+
+    def _get_substitutes(self, category, nutrition_grades):
+        """Get the best substitutes for a category"""
+
+        substitutes = []
+        r2 = requests.get(self.statistics_marks_for_a_category_url.format(slugify(category)), allow_redirects=False)
+
+        if r2.status_code == 301:
+            category = re.search(r'^/categorie/([0-9a-z_\-]*).json$', r2.next.path_url).group(1)
+            r2 = requests.get(self.statistics_marks_for_a_category_url.format(category))
+
+        r2 = r2.json()
+
+        if r2['count'] > 0:
+            i_substitutes, i_mark = 0, 0
+            while i_substitutes <= 4 and i_mark <= r2['count'] - 1 and r2['tags'][i_mark]['id'] < nutrition_grades:
+                r3 = requests.get(self.product_marks_url.format(slugify(category), r2['tags'][i_mark]['id']))
+                r3 = r3.json()
+                substitutes += r3['products'][:5 - i_substitutes]
+                i_substitutes += len(r3['products'][:5 - i_substitutes])
+                i_mark += 1
+
+        # wash categories keys
+        for substitute in substitutes:
+            substitute['categories'] = substitute['categories'].split(',')
+            i = 0
+            while i <= len(substitute['categories']) - 1:
+                if ':' in substitute['categories'][i]:
+                    substitute['categories'][i] = (substitute['categories'][i].split(':'))[1]
+                i += 1
+
+        return substitutes
+
 
 class DatabaseManager(object):
     def __init__(self):
@@ -20,7 +88,7 @@ class DatabaseManager(object):
         columns = tuple(column[0] for column in self.cursor.description)
 
         products = []
-        for i, product in enumerate(fetchall_result, start=1):
+        for product in fetchall_result:
             products.append(dict(zip(columns, product)))
 
         return products
@@ -37,14 +105,14 @@ class DatabaseManager(object):
         # procedure_result[3] = p_researched_subsitutes
         return self.cursor.callproc('check_if_product_exist_by_bar_code', (code_product, 0, 0, 0))
 
-    def fill_list_from_database(self, product_id, products):
+    def fill_list_with_product_and_substitutes(self, product_id, list_):
         """Fill a given list with the product and his substitutes from the database."""
 
-        products.append(self.get_product_detail(product_id))
+        list_.append(self.get_product_detail(product_id))
 
-        if products[0].get('substitutes', ''):
-            for substitute_id in str(products[0].get('substitutes', '')).split(','):
-                products.append(self.get_product_detail(substitute_id))
+        if list_[0].get('substitutes', ''):
+            for substitute_id in str(list_[0].get('substitutes', '')).split(','):
+                list_.append(self.get_product_detail(substitute_id))
 
     def _execute_product_sql_database(self, product, substitutes):
         # Save a product and his substitutes in the database.
@@ -52,7 +120,7 @@ class DatabaseManager(object):
         # procedure_result[1] = p_product_id
         # procedure_result[2] = p_exist_substitutes
         # procedure_result[3] = p_researched_subsitutes
-        procedure_result = self.cursor.callproc('check_if_product_exist_by_bar_code', (product['code'], 0, 0, 0))
+        procedure_result = self.check_if_product_exist_by_bar_code(product['code'])
 
         if procedure_result[1]:
             return procedure_result[1]
