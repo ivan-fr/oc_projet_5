@@ -153,8 +153,6 @@ class Printer(object):
                     else:
                         cprint(str(i) + ') ' + department, 'blue')
 
-                print(position)
-
                 while True:
                     department_number = input('Choisir un numéro de rayon '
                                               '(tapez "quit" pour quitter ou "back" pour revenir en arrière) : ')
