@@ -96,20 +96,23 @@ class Printer(object):
             if command_choice == 'quit':
                 break
             elif command_choice == '1':
-                cprint(' 1) Parcourir le rayon. ', 'white', 'on_blue')
-                cprint(' 2) Effectuer uen recherche. ', 'white', 'on_blue')
-
-                # Logical input choices
                 while True:
-                    command_choice = str(input('Choisir une commande (tapez "quit" pour quitter) : '))
-                    if command_choice not in ('1', '2', 'quit'):
-                        continue
-                    break
+                    cprint(' 1) Parcourir le rayon. ', 'white', 'on_blue')
+                    cprint(' 2) Effectuer uen recherche. ', 'white', 'on_blue')
 
-                if command_choice == "1":
-                    self.get_store_department()
-                else:
-                    self.do_research()
+                    # Logical input choices
+                    while True:
+                        command_choice = str(input('Choisir une commande (tapez "quit" pour quitter) : '))
+                        if command_choice not in ('1', '2', 'quit'):
+                            continue
+                        break
+
+                    if command_choice == 'quit':
+                        break
+                    elif command_choice == "1":
+                        self.get_store_department()
+                    elif command_choice == "2":
+                        self.do_research()
             else:
                 self.get_substitutable_products()
 
@@ -252,43 +255,44 @@ class Printer(object):
 
     def get_substitutable_products(self):
         """Get substitutable products"""
-        products = self.database_manager.get_substitutable_products()
-
-        if not products:
-            cprint('Aucun resultat.', 'red')
-            return
-
-        print('Choisir un produit :')
-
-        range_param = 1
-
-        for i, product in enumerate(products, start=1):
-            range_param = i
-            cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
-                   'blue')
-
-        # a loop for input choices
         while True:
-            product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
-            if product_number != 'quit':
-                try:
-                    if not (1 <= int(product_number) <= range_param):
+            products = self.database_manager.get_substitutable_products()
+
+            if not products:
+                cprint('Aucun resultat.', 'red')
+                return
+
+            print('Choisir un produit :')
+
+            range_param = 1
+
+            for i, product in enumerate(products, start=1):
+                range_param = i
+                cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
+                       'blue')
+
+            # a loop for input choices
+            while True:
+                product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
+                if product_number != 'quit':
+                    try:
+                        if not (1 <= int(product_number) <= range_param):
+                            continue
+                    except ValueError:
                         continue
-                except ValueError:
-                    continue
-            break
+                break
 
-        if product_number == 'quit':
-            return
+            if product_number == 'quit':
+                break
 
-        product_number = int(product_number)
-        product_number -= 1
-        product = products[product_number]
+            product_number = int(product_number)
+            product_number -= 1
+            product = products[product_number]
 
-        operateur_result = []
-        self.database_manager.fill_list_with_product_and_substitutes(product.get('id'), operateur_result)
-        # print product and his subsitutes in the terminal
-        self.printer(operateur_result)
+            operateur_result = []
+            self.database_manager.fill_list_with_product_and_substitutes(product.get('id'), operateur_result)
+            # print product and his subsitutes in the terminal
+            self.printer(operateur_result)
 
     def do_research(self):
         """Research function."""
