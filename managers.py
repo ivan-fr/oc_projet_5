@@ -6,26 +6,27 @@ import requests
 from slugify import slugify
 
 
-class ApiManager(object):
+class ApiOperatorManager(object):
     """this class communicates with the api of openfoodfacts"""
 
     # Init url from openfoodfacts api.
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"
-    product_json_url = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
+    product_url = "http://fr.openfoodfacts.org/api/v0/product/{}.json"
+    category_url = "https://fr.openfoodfacts.org/categorie/{}/{}.json"
     statistics_marks_for_a_category_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
     def get_products(self, research):
         """Get products from the openfoodfacts API by research"""
 
-        payload = {'search_terms': research, 'search_simple': 1, 'action': 'process', 'page_size': 10, 'json': 1}
+        payload = {'search_terms': research, 'search_simple': 1, 'action': 'process', 'page_size': 20, 'json': 1}
         request = requests.get(self.search_url, params=payload, allow_redirects=False)
 
         if request.status_code == 301:
             print(request.next.path_url)
             numero_product = re.search(r'^/(produit|product)/(\d+)/?[0-9a-zA-Z_\-]*/?$',
                                        request.next.path_url).group(2)
-            request = requests.get(self.product_json_url.format(numero_product))
+            request = requests.get(self.product_url.format(numero_product))
             request = (request.json()['product'],)
         else:
             request = request.json()
@@ -68,6 +69,10 @@ class ApiManager(object):
                 i += 1
 
         return substitutes
+
+    def get_products_from_category(self, category, page):
+        r = requests.get(self.category_url.format(slugify(category), page))
+        return r.json()
 
 
 class DatabaseManager(object):

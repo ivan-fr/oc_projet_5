@@ -1,6 +1,7 @@
 from copy import deepcopy
-from managers import ApiManager, DatabaseManager
+from managers import ApiOperatorManager, DatabaseManager
 from termcolor import cprint
+from math import ceil
 
 
 def _find_words(string):
@@ -73,7 +74,7 @@ class Printer(object):
     }
 
     def __init__(self):
-        self.api_operator = ApiManager()
+        self.api_operator = ApiOperatorManager()
 
     def __call__(self, *args, **kwargs):
         self.database_manager = DatabaseManager()
@@ -179,6 +180,46 @@ class Printer(object):
                         position += "|tuple:" + str(data[1])
                         position += "|dict:" + str(sub_department[department_number]["key_in_dict"])
                         step += "2"
+                    else:
+                        page = 1
+                        while True:
+                            data = self.api_operator.get_products_from_category(sub_department[department_number], page)
+                            number_page = int(ceil(data['count'] / 20))
+                            cprint(str(number_page) + " page(s) pour " + str(data['count']) + " résultat(s).")
+
+                            print('Choisir un produit :')
+                            products = data['products']
+
+                            range_param = 1
+                            for i, product in enumerate(products, start=1):
+                                range_param = i
+                                cprint(str(i) + ') ' + product.get('product_name', '') + ' - '
+                                       + product.get('generic_name', ''), 'blue')
+
+                            print('page ' + str(page) + ' sur ' + str(number_page))
+
+                            # a loop for input choices
+                            while True:
+                                product_number = input('Choisir un numéro de produit'
+                                                       '(tapez "quit" pour quitter, "pp" pour page precedente, '
+                                                       '"ps" pour page suivante) : ')
+                                if product_number != 'quit' and product_number != "pp" and product_number != "ps":
+                                    try:
+                                        if not (1 <= int(product_number) <= range_param):
+                                            continue
+                                    except ValueError:
+                                        continue
+                                break
+
+                            if product_number == 'quit':
+                                break
+                            elif product_number == "ps" and page <= number_page - 1:
+                                page += 1
+                            elif product_number == "pp" and page >= 2:
+                                page -= 1
+                            else:
+                                product_number = int(product_number) - 1
+                                self.render(products[product_number])
 
             if department_number == 'quit':
                 break
