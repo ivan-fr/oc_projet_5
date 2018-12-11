@@ -15,7 +15,7 @@ class ApiManager(object):
     statistics_marks_for_a_category_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
-    def _get_products(self, research):
+    def get_products(self, research):
         """Get products from the openfoodfacts API by research"""
 
         payload = {'search_terms': research, 'search_simple': 1, 'action': 'process', 'page_size': 10, 'json': 1}
@@ -37,7 +37,7 @@ class ApiManager(object):
 
         return request
 
-    def _get_substitutes(self, category, nutrition_grades):
+    def get_substitutes(self, category, nutrition_grades):
         """Get the best substitutes for a category"""
 
         substitutes = []
@@ -114,7 +114,7 @@ class DatabaseManager(object):
             for substitute_id in str(list_[0].get('substitutes', '')).split(','):
                 list_.append(self.get_product_detail(substitute_id))
 
-    def _execute_product_sql_database(self, product, substitutes):
+    def execute_product_sql_database(self, product, substitutes):
         # Save a product and his substitutes in the database.
 
         # procedure_result[1] = p_product_id
@@ -186,16 +186,16 @@ class DatabaseManager(object):
         self.mydb.commit()
 
         if substitutes is not None:
-            self._execute_substitutes_sql_database(r_id, substitutes)
+            self.execute_substitutes_sql_database(r_id, substitutes)
 
         return r_id
 
-    def _execute_substitutes_sql_database(self, product_id, substitutes):
+    def execute_substitutes_sql_database(self, product_id, substitutes):
         # save relationship beetween products
         if substitutes is not None:
             for substitute in substitutes:
 
-                substitution_id = self._execute_product_sql_database(substitute, None)
+                substitution_id = self.execute_product_sql_database(substitute, None)
 
                 if product_id != substitution_id:
                     sql = "INSERT INTO product_substitute_product (product_id_1, product_id_2) " \
