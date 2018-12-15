@@ -86,32 +86,22 @@ class Printer(object):
             cprint(' 1) Quel aliment souhaitez-vous remplacer ? ', 'white', 'on_blue')
             cprint(' 2) Retrouver mes aliments substitués. ', 'white', 'on_blue')
 
-            # Logical input choices
-            while True:
-                command_choice = str(input('Choisir une commande (tapez "quit" pour quitter) : '))
-                if command_choice not in ('1', '2', 'quit'):
-                    continue
-                break
+            reply_1 = self.ask_with_input(2, ('quit',))
 
-            if command_choice == 'quit':
+            if reply_1 == 'quit':
                 break
-            elif command_choice == '1':
+            elif reply_1 == '1':
                 while True:
                     cprint(' 1) Parcourir le rayon. ', 'white', 'on_blue')
                     cprint(' 2) Effectuer uen recherche. ', 'white', 'on_blue')
 
-                    # Logical input choices
-                    while True:
-                        command_choice = str(input('Choisir une commande (tapez "quit" pour quitter) : '))
-                        if command_choice not in ('1', '2', 'quit'):
-                            continue
-                        break
+                    reply_2 = self.ask_with_input(2, ('quit',))
 
-                    if command_choice == 'quit':
+                    if reply_2 == 'quit':
                         break
-                    elif command_choice == "1":
+                    elif reply_2 == "1":
                         self.get_store_department()
-                    elif command_choice == "2":
+                    elif reply_2 == "2":
                         self.do_research()
             else:
                 self.get_substitutable_products()
@@ -124,26 +114,17 @@ class Printer(object):
         while True:
             print('Choisir un rayon :')
 
-            position = ""
-            step = ""
+            position, step, reply_3 = "", "", None
 
             for i, department in enumerate(departments, start=1):
                 cprint(str(i) + ') ' + department + ' >', 'blue')
 
-            while True:
-                department_number = input('Choisir un numéro de rayon (tapez "quit" pour quitter) : ')
-                if department_number != 'quit':
-                    try:
-                        if not (1 <= int(department_number) <= len(departments)):
-                            continue
-                    except ValueError:
-                        continue
+            reply_1 = self.ask_with_input(len(departments), ('quit',))
+
+            if reply_1 == 'quit':
                 break
 
-            if department_number == 'quit':
-                break
-
-            position += 'dict:' + str(departments[int(department_number) - 1])
+            position += 'dict:' + str(departments[int(reply_1) - 1])
             step += "1"
 
             while True:
@@ -157,28 +138,19 @@ class Printer(object):
                     else:
                         cprint(str(i) + ') ' + department, 'blue')
 
-                while True:
-                    department_number = input('Choisir un numéro de rayon '
-                                              '(tapez "quit" pour quitter ou "back" pour revenir en arrière) : ')
-                    if department_number != 'quit' and department_number != 'back':
-                        try:
-                            if not (1 <= int(department_number) <= len(sub_department)):
-                                continue
-                        except ValueError:
-                            continue
+                reply_2 = self.ask_with_input(len(sub_department), ('quit', 'back'))
+
+                if reply_2 == 'quit':
                     break
 
-                if department_number == 'quit':
-                    break
-
-                if department_number == 'back':
+                if reply_2 == 'back':
                     position = "|".join(position.split('|')[:-int(step[-1])])
                     step = step[:-1]
 
                     if not position:
                         break
                 else:
-                    department_number = int(department_number) - 1
+                    department_number = int(reply_2) - 1
                     if data[1] is not None and isinstance(sub_department[department_number], dict):
                         position += "|tuple:" + str(data[1])
                         position += "|dict:" + str(sub_department[department_number]["key_in_dict"])
@@ -201,31 +173,22 @@ class Printer(object):
 
                             print('page ' + str(page) + ' sur ' + str(number_page))
 
-                            # a loop for input choices
-                            while True:
-                                product_number = input('Choisir un numéro de produit'
-                                                       '(tapez "quit" pour quitter, "pp" pour page precedente, '
-                                                       '"ps" pour page suivante) : ')
-                                if product_number != 'quit' and product_number != "pp" and product_number != "ps":
-                                    try:
-                                        if not (1 <= int(product_number) <= range_param):
-                                            continue
-                                    except ValueError:
-                                        continue
-                                break
+                            reply_3 = self.ask_with_input(range_param, ('quit', 'pp', 'ps'))
 
-                            if product_number == 'quit':
+                            if reply_3 == 'quit':
                                 break
-                            elif product_number == "ps" and page <= number_page - 1:
-                                page += 1
-                            elif product_number == "pp" and page >= 2:
-                                page -= 1
+                            elif reply_3 == "ps":
+                                if page <= number_page - 1:
+                                    page += 1
+                            elif reply_3 == "pp":
+                                if page >= 2:
+                                    page -= 1
                             else:
-                                product_number = int(product_number) - 1
+                                product_number = int(reply_3) - 1
                                 self.render(products[product_number])
 
-            if department_number == 'quit':
-                break
+                if reply_3 == 'quit':
+                    break
 
     def __get_sub_department(self, position):
         detail_depth = position.split('|')
@@ -271,21 +234,12 @@ class Printer(object):
                 cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
                        'blue')
 
-            # a loop for input choices
-            while True:
-                product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
-                if product_number != 'quit':
-                    try:
-                        if not (1 <= int(product_number) <= range_param):
-                            continue
-                    except ValueError:
-                        continue
+            reply = self.ask_with_input(range_param, ('quit',))
+
+            if reply == 'quit':
                 break
 
-            if product_number == 'quit':
-                break
-
-            product_number = int(product_number)
+            product_number = int(reply)
             product_number -= 1
             product = products[product_number]
 
@@ -315,21 +269,12 @@ class Printer(object):
                 cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
                        'blue')
 
-            # a loop for input choices
-            while True:
-                product_number = input('Choisir un numéro de produit (tapez "quit" pour quitter) : ')
-                if product_number != 'quit':
-                    try:
-                        if not (1 <= int(product_number) <= range_param):
-                            continue
-                    except ValueError:
-                        continue
-                break
+            reply = self.ask_with_input(range_param, ('quit',))
 
-            if product_number == 'quit':
+            if reply == 'quit':
                 continue
 
-            product_number = int(product_number) - 1
+            product_number = int(reply) - 1
             self.render(products[product_number])
 
     def render(self, product):
@@ -414,3 +359,17 @@ class Printer(object):
             print('magasins :', product['stores_tags'])
         cprint("==================", 'blue')
         print()
+
+    def ask_with_input(self, range_param: int, str_choices: tuple):
+        # a loop for input choices
+        while True:
+            reply = input('Choisir un numéro (tapez "quit" pour quitter) : ')
+            try:
+                if reply not in str_choices:
+                    if int(reply) not in range(1, range_param + 1):
+                        continue
+            except ValueError:
+                continue
+            break
+
+        return reply
