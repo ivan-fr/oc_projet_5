@@ -4,7 +4,7 @@ from termcolor import cprint
 from math import ceil
 
 
-def _find_words(string):
+def _find_words(string: str):
     """Get words from a sentence."""
     if string:
         cursor, i, string = 0, 0, string + " "
@@ -21,7 +21,7 @@ def _find_words(string):
             i += 1
 
 
-class Printer(object):
+class Printer:
     product_url = "https://fr.openfoodfacts.org/product/{}"
     store_department = {
         'Prêt à deguster': ('Sandwichs', 'Desserts', 'Entrées'),
@@ -70,7 +70,10 @@ class Printer(object):
                                                                                  'Crèmes dessert'),
                                 'Sucres, farines, coulis et préparation gâteaux': ('Sucres', 'Farines'),
                                 'Diététique': ('Produits sans gluten', 'Boissons sucrées', 'Thés')
-                            })
+                            }),
+        'Surgelés': ('Pizzas', 'Pizzas et tartes surgelées', 'Frites surgelées',
+                     {'Glaces et sorbets': ('Crèmes glacées', 'Bâtonnets glacés',
+                                            'Cônes', 'Bûches glacées', 'Glaces et sorbets')})
     }
 
     def __init__(self):
@@ -190,7 +193,7 @@ class Printer(object):
                 if reply_3 == 'quit':
                     break
 
-    def __get_sub_department(self, position):
+    def __get_sub_department(self, position: str):
         detail_depth = position.split('|')
 
         select = self.store_department
@@ -277,7 +280,7 @@ class Printer(object):
             product_number = int(reply) - 1
             self.render(products[product_number])
 
-    def render(self, product):
+    def render(self, product: dict):
         # wash categories_tag and categories
         i = 0
         while i <= len(product['categories_tags']) - 1:
@@ -302,7 +305,7 @@ class Printer(object):
                 # get substitutes of the current product from the openfoodfacts API
                 substitutes = self.api_operator.get_substitutes(product['categories_tags'][-1],
                                                                 product.get('nutrition_grade', 'e'))
-                self.database_manager.execute_substitutes_sql_database(procedure_result[1], substitutes)
+                self.database_manager.save_substitutes_sql_database(procedure_result[1], substitutes)
             operateur_result = []
             self.database_manager.fill_list_with_product_and_substitutes(procedure_result[1], operateur_result)
             self.printer(operateur_result)
@@ -324,11 +327,11 @@ class Printer(object):
                 break
             if save_choice == 'y':
                 # save product and his substitutes
-                self.database_manager.execute_product_sql_database(product, substitutes)
+                self.database_manager.save_product_sql_database(product, substitutes)
                 cprint('Produit enregistré dans la base de données.', 'red')
 
     @staticmethod
-    def printer_adapter_for_terminal(products):
+    def printer_adapter_for_terminal(products: list):
         """Join each list in the given product from the openfoodfacts API for the printer function"""
         for product in products:
             product['categories'] = ', '.join(product.get('categories', ()))
@@ -337,7 +340,7 @@ class Printer(object):
             product['stores_tags'] = ', '.join(product.get('stores_tags', ()))
 
     @staticmethod
-    def printer(products):
+    def printer(products: list):
         """Print the data of a product and its substitutes."""
         print()
         i = 0
@@ -360,7 +363,8 @@ class Printer(object):
         cprint("==================", 'blue')
         print()
 
-    def ask_with_input(self, range_param: int, str_choices: tuple):
+    @staticmethod
+    def ask_with_input(range_param: int, str_choices: tuple):
         # a loop for input choices
         while True:
             reply = input('Choisir un numéro (tapez "quit" pour quitter) : ')

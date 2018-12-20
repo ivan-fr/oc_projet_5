@@ -6,7 +6,7 @@ import requests
 from slugify import slugify
 
 
-class ApiOperatorManager(object):
+class ApiOperatorManager:
     """this class communicates with the api of openfoodfacts"""
 
     # Init url from openfoodfacts api.
@@ -16,7 +16,7 @@ class ApiOperatorManager(object):
     statistics_marks_for_a_category_url = "https://fr.openfoodfacts.org/categorie/{}/notes-nutritionnelles.json"
     product_marks_url = "https://fr.openfoodfacts.org/categorie/{}/note-nutritionnelle/{}.json"
 
-    def get_products(self, research):
+    def get_products(self, research: str):
         """Get products from the openfoodfacts API by research"""
 
         payload = {'search_terms': research, 'search_simple': 1, 'action': 'process', 'page_size': 20, 'json': 1}
@@ -38,7 +38,7 @@ class ApiOperatorManager(object):
 
         return request
 
-    def get_substitutes(self, category, nutrition_grades):
+    def get_substitutes(self, category: str, nutrition_grades: str):
         """Get the best substitutes for a category"""
 
         substitutes = []
@@ -70,12 +70,12 @@ class ApiOperatorManager(object):
 
         return substitutes
 
-    def get_products_from_category(self, category, page):
+    def get_products_from_category(self, category: str, page: int):
         r = requests.get(self.category_url.format(slugify(category), page))
         return r.json()
 
 
-class DatabaseManager(object):
+class DatabaseManager:
     def __init__(self):
         # Connect to the mysql database.
         self.mydb = mysql.connector.connect(host=DB_HOST,
@@ -98,28 +98,28 @@ class DatabaseManager(object):
 
         return products
 
-    def get_product_detail(self, product_id):
+    def get_product_detail(self, product_id: int):
         self.cursor.callproc('get_product_detail', (product_id,))
 
         for result in self.cursor.stored_results():
             return dict(zip(result.column_names, result.fetchone()))
 
-    def check_if_product_exist_by_bar_code(self, code_product):
+    def check_if_product_exist_by_bar_code(self, code_product: str):
         # procedure_result[1] = p_product_id
         # procedure_result[2] = p_exist_substitutes
         # procedure_result[3] = p_researched_subsitutes
         return self.cursor.callproc('check_if_product_exist_by_bar_code', (code_product, 0, 0, 0))
 
-    def fill_list_with_product_and_substitutes(self, product_id, list_):
+    def fill_list_with_product_and_substitutes(self, product_id: int, list_):
         """Fill a given list with the product and his substitutes from the database."""
 
         list_.append(self.get_product_detail(product_id))
 
         if list_[0].get('substitutes', ''):
             for substitute_id in str(list_[0].get('substitutes', '')).split(','):
-                list_.append(self.get_product_detail(substitute_id))
+                list_.append(self.get_product_detail(int(substitute_id)))
 
-    def execute_product_sql_database(self, product, substitutes):
+    def save_product_sql_database(self, product: (dict, str), substitutes: (list, None)):
         # Save a product and his substitutes in the database.
 
         # procedure_result[1] = p_product_id
@@ -191,16 +191,16 @@ class DatabaseManager(object):
         self.mydb.commit()
 
         if substitutes is not None:
-            self.execute_substitutes_sql_database(r_id, substitutes)
+            self.save_substitutes_sql_database(r_id, substitutes)
 
         return r_id
 
-    def execute_substitutes_sql_database(self, product_id, substitutes):
+    def save_substitutes_sql_database(self, product_id: str, substitutes: list):
         # save relationship beetween products
         if substitutes is not None:
             for substitute in substitutes:
 
-                substitution_id = self.execute_product_sql_database(substitute, None)
+                substitution_id = self.save_product_sql_database(substitute, None)
 
                 if product_id != substitution_id:
                     sql = "INSERT INTO product_substitute_product (product_id_1, product_id_2) " \
