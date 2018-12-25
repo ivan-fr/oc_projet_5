@@ -14,7 +14,8 @@ def _find_words(string: str):
                     yield string[cursor:i]
                 delta = 1
                 while i + delta <= len(string) - 1:
-                    if string[i + delta] not in (' ', '\n', ',', '.', '?', '!', '[', ']', '(', ')'):
+                    if string[i + delta] not in (
+                            ' ', '\n', ',', '.', '?', '!', '[', ']', '(', ')'):
                         break
                     delta += 1
                 i = cursor = i + delta
@@ -27,53 +28,81 @@ class Printer:
         'Prêt à deguster': ('Sandwichs', 'Desserts', 'Entrées'),
         'Fruits et Légumes': ('Fruits', 'Légumes frais'),
         'Viande et Poissons': ({
-            'boucherie': ('Viandes fraîches', 'Bœuf', 'Viandes de veau', 'Porc'),
+            'boucherie': (
+                'Viandes fraîches', 'Bœuf', 'Viandes de veau', 'Porc'),
             'Poissonnerie': ('Fruits de mer', 'Sushi')
         }),
         'Pains et Pâtisseries': ('Pain', 'Gâteaux'),
         'Crémerie': ('Œufs', 'Crèmes fraîches', 'Laits', 'Boissons lactées',
                      {
                          'Fromages': (
-                             'Raclettes', 'Camemberts', 'Coulommiers', 'Bries', 'Roqueforts', 'Fromages de brebis',
-                             'Mozzarella', 'Feta', 'Emmentals', 'Comté', 'Cantal', 'Fromages en tranches',
+                             'Raclettes', 'Camemberts', 'Coulommiers', 'Bries',
+                             'Roqueforts', 'Fromages de brebis',
+                             'Mozzarella', 'Feta', 'Emmentals', 'Comté',
+                             'Cantal', 'Fromages en tranches',
                              'Fromages râpés'),
-                         'Yaourts, desserts et spécialités végétales': ('Fromages blancs', 'Yaourts natures',
-                                                                        'Yaourts aux fruits',
-                                                                        'Fromages blancs aux fruits',
-                                                                        'Yaourts à boire', 'Mousses sucrées',
-                                                                        'Yaourts au Bifidus'),
-                         'Beurres et margarines': ('Beurres doux', 'Beurres demi-sel', 'Margarines')
+                         'Yaourts, desserts et spécialités végétales': (
+                             'Fromages blancs', 'Yaourts natures',
+                             'Yaourts aux fruits',
+                             'Fromages blancs aux fruits',
+                             'Yaourts à boire', 'Mousses sucrées',
+                             'Yaourts au Bifidus'),
+                         'Beurres et margarines': (
+                             'Beurres doux', 'Beurres demi-sel', 'Margarines')
                      }),
-        'Charcuterie': ('Foies gras', 'Jambons blancs', 'Rôtis de porc', 'Saucissons', 'Chorizos',
-                        'Lardons de porc', 'Knacks industrielles', 'Saucisses', 'boudins'),
+        'Charcuterie': (
+            'Foies gras', 'Jambons blancs', 'Rôtis de porc', 'Saucissons',
+            'Chorizos',
+            'Lardons de porc', 'Knacks industrielles', 'Saucisses', 'boudins'),
         'Epicerie Salée': ({
-                               "Pour l'apéritif": ('Chips', 'Cacahuètes', 'Olives', 'Tuiles salées',
-                                                   'Tortillas', 'Biscuits apéritifs', 'Pistaches'),
-                               'Soupes et croutons': ('Soupes', 'Soupes déshydratées', 'Croûtons'),
-                               'Les Plats cuisinés': ('Raviolis au bœuf', 'Couscous préparés', 'Taboulés',
-                                                      'Cassoulets', 'Confits de canard', 'Choucroutes'),
+                               "Pour l'apéritif": (
+                                   'Chips', 'Cacahuètes', 'Olives',
+                                   'Tuiles salées',
+                                   'Tortillas', 'Biscuits apéritifs',
+                                   'Pistaches'),
+                               'Soupes et croutons': (
+                                   'Soupes', 'Soupes déshydratées', 'Croûtons'),
+                               'Les Plats cuisinés': (
+                                   'Raviolis au bœuf', 'Couscous préparés',
+                                   'Taboulés',
+                                   'Cassoulets', 'Confits de canard',
+                                   'Choucroutes'),
                                'Conserves et bocaux': (
-                                   'Maïs', 'Asperges', 'Macédoines de légumes en conserve', 'Ratatouilles',
-                                   'Champignons en conserve', 'Tomates en conserve', 'Thons en conserve',
+                                   'Maïs', 'Asperges',
+                                   'Macédoines de légumes en conserve',
+                                   'Ratatouilles',
+                                   'Champignons en conserve',
+                                   'Tomates en conserve', 'Thons en conserve',
                                    'Sardines en conserve'),
                                'Huiles, vinaigres, condiments et sauces': (
-                                   "Huiles d'olive", "Huiles de tournesol", "Vinaigres",
-                                   "Vinaigrettes", "Jus de citron", "Cornichons",
-                                   "Olives", "Moutardes", "Ketchup", "Mayonnaises"),
+                                   "Huiles d'olive", "Huiles de tournesol",
+                                   "Vinaigres",
+                                   "Vinaigrettes", "Jus de citron",
+                                   "Cornichons",
+                                   "Olives", "Moutardes", "Ketchup",
+                                   "Mayonnaises"),
                                'Sel, épices et bouillons': (
-                                   'Sels', 'Poivres', 'Epices', 'Herbes aromatiques', 'Bouillons')
+                                   'Sels', 'Poivres', 'Epices',
+                                   'Herbes aromatiques', 'Bouillons')
                            }, 'Pâtes alimentaires', 'Riz'),
-        'Epicerie Sucrée': ('Bonbons', 'Confiseries chocolatées', 'Confiseries', 'Céréales pour petit-déjeuner',
-                            'Barres de céréales', 'Pains de mie', 'Confitures', 'Pâtes à tartiner', 'Biscuits',
+        'Epicerie Sucrée': ('Bonbons', 'Confiseries chocolatées', 'Confiseries',
+                            'Céréales pour petit-déjeuner',
+                            'Barres de céréales', 'Pains de mie', 'Confitures',
+                            'Pâtes à tartiner', 'Biscuits',
                             {
-                                'Compotes, fruits au sirop et crèmes desserts': ('Compotes', 'Fruits au sirop',
-                                                                                 'Crèmes dessert'),
-                                'Sucres, farines, coulis et préparation gâteaux': ('Sucres', 'Farines'),
-                                'Diététique': ('Produits sans gluten', 'Boissons sucrées', 'Thés')
+                                'Compotes, fruits au sirop et crèmes desserts':
+                                    ('Compotes', 'Fruits au sirop',
+                                     'Crèmes dessert'),
+                                'Sucres, farines': (
+                                    'Sucres', 'Farines'),
+                                'Diététique': (
+                                    'Produits sans gluten', 'Boissons sucrées',
+                                    'Thés')
                             }),
         'Surgelés': ('Pizzas', 'Pizzas et tartes surgelées', 'Frites surgelées',
-                     {'Glaces et sorbets': ('Crèmes glacées', 'Bâtonnets glacés',
-                                            'Cônes', 'Bûches glacées', 'Glaces et sorbets')})
+                     {'Glaces et sorbets': (
+                         'Crèmes glacées', 'Bâtonnets glacés',
+                         'Cônes', 'Bûches glacées', 'Glaces et sorbets')})
     }
 
     def __init__(self):
@@ -86,8 +115,10 @@ class Printer:
         while True:
             cprint(' Menu ', 'white', 'on_red')
             print("==================")
-            cprint(' 1) Quel aliment souhaitez-vous remplacer ? ', 'white', 'on_blue')
-            cprint(' 2) Retrouver mes aliments substitués. ', 'white', 'on_blue')
+            cprint(' 1) Quel aliment souhaitez-vous remplacer ? ', 'white',
+                   'on_blue')
+            cprint(' 2) Retrouver mes aliments substitués. ', 'white',
+                   'on_blue')
 
             reply_1 = self.ask_with_input(2, ('quit',))
 
@@ -117,7 +148,7 @@ class Printer:
         while True:
             print('Choisir un rayon :')
 
-            position, step, reply_3 = "", "", None
+            position, step = "", ""
 
             for i, department in enumerate(departments, start=1):
                 cprint(str(i) + ') ' + department + ' >', 'blue')
@@ -131,7 +162,7 @@ class Printer:
             step += "1"
 
             while True:
-                data = self.__get_sub_department(position)
+                data, reply_3 = self.__get_sub_department(position), None
 
                 sub_department = data[0]
 
@@ -141,7 +172,8 @@ class Printer:
                     else:
                         cprint(str(i) + ') ' + department, 'blue')
 
-                reply_2 = self.ask_with_input(len(sub_department), ('quit', 'back'))
+                reply_2 = self.ask_with_input(len(sub_department),
+                                              ('quit', 'back'))
 
                 if reply_2 == 'quit':
                     break
@@ -154,29 +186,35 @@ class Printer:
                         break
                 else:
                     department_number = int(reply_2) - 1
-                    if data[1] is not None and isinstance(sub_department[department_number], dict):
+                    if data[1] is not None and isinstance(
+                            sub_department[department_number], dict):
                         position += "|tuple:" + str(data[1])
-                        position += "|dict:" + str(sub_department[department_number]["key_in_dict"])
+                        position += "|dict:" + str(
+                            sub_department[department_number]["key_in_dict"])
                         step += "2"
                     else:
                         page = 1
                         while True:
-                            data = self.api_operator.get_products_from_category(sub_department[department_number], page)
+                            data = self.api_operator.get_products_from_category(
+                                sub_department[department_number], page)
                             number_page = int(ceil(data['count'] / 20))
-                            cprint(str(number_page) + " page(s) pour " + str(data['count']) + " résultat(s).")
+                            cprint(str(number_page) + " page(s) pour " + str(
+                                data['count']) + " résultat(s).")
 
                             print('Choisir un produit :')
                             products = data['products']
 
-                            range_param = 1
                             for i, product in enumerate(products, start=1):
-                                range_param = i
-                                cprint(str(i) + ') ' + product.get('product_name', '') + ' - '
-                                       + product.get('generic_name', ''), 'blue')
+                                cprint(str(i) + ') ' +
+                                       product.get('product_name', '') +
+                                       ' - ' +
+                                       product.get('generic_name', ''), 'blue')
 
-                            print('page ' + str(page) + ' sur ' + str(number_page))
+                            print('page ' + str(page) + ' sur ' + str(
+                                number_page))
 
-                            reply_3 = self.ask_with_input(range_param, ('quit', 'pp', 'ps'))
+                            reply_3 = self.ask_with_input(20,
+                                                          ('quit', 'pp', 'ps'))
 
                             if reply_3 == 'quit':
                                 break
@@ -234,8 +272,8 @@ class Printer:
 
             for i, product in enumerate(products, start=1):
                 range_param = i
-                cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
-                       'blue')
+                cprint(str(i) + ') ' + product.get('product_name', '') +
+                       ' - ' + product.get('generic_name', ''), 'blue')
 
             reply = self.ask_with_input(range_param, ('quit',))
 
@@ -247,14 +285,16 @@ class Printer:
             product = products[product_number]
 
             operateur_result = []
-            self.database_manager.fill_list_with_product_and_substitutes(product.get('id'), operateur_result)
+            self.database_manager.fill_list_with_product_and_substitutes(
+                product.get('id'), operateur_result)
             # print product and his subsitutes in the terminal
             self.printer(operateur_result)
 
     def do_research(self):
         """Research function."""
         while True:
-            research = " ".join(_find_words(str(input('Taper votre recherche (tapez "quit" pour quitter) : '))))
+            research = " ".join(_find_words(str(
+                input('Taper votre recherche (tapez "quit" pour quitter) : '))))
             if research == "quit":
                 break
 
@@ -269,8 +309,9 @@ class Printer:
             range_param = 1
             for i, product in enumerate(products, start=1):
                 range_param = i
-                cprint(str(i) + ') ' + product.get('product_name', '') + ' - ' + product.get('generic_name', ''),
-                       'blue')
+                cprint(str(i) + ') ' +
+                       product.get('product_name', '') +
+                       ' - ' + product.get('generic_name', ''), 'blue')
 
             reply = self.ask_with_input(range_param, ('quit',))
 
@@ -281,62 +322,85 @@ class Printer:
             self.render(products[product_number])
 
     def render(self, product: dict):
+        self.wash_categories(product)
+
+        # procedure_result[1] = p_product_id
+        # procedure_result[2] = p_exist_substitutes
+        # procedure_result[3] = p_researched_subsitutes
+        procedure_result = self.database_manager.check_if_product_exist(
+            product['code'])
+        if procedure_result[1]:  # if product already exist in database
+            self.print_from_database(product, procedure_result)
+        else:
+            self.print_from_api(product)
+
+    def print_from_database(self, product: dict, procedure_result: list):
+        # procedure_result[1] = p_product_id
+        # procedure_result[2] = p_exist_substitutes
+        # procedure_result[3] = p_researched_subsitutes
+        print('Produit déjà présent dans la base de données.')
+        # if product doesn't have substitutes in database
+        if not procedure_result[2] and not procedure_result[3]:
+            # get substitutes of the current product
+            # from the openfoodfacts API
+            substitutes = self.api_operator.get_substitutes(
+                product['categories_tags'][-1],
+                product.get('nutrition_grade', 'e'))
+            self.database_manager.save_substitutes_sql_database(
+                procedure_result[1], substitutes)
+        operateur_result = []
+        self.database_manager.fill_list_with_product_and_substitutes(
+            procedure_result[1], operateur_result)
+        self.printer(operateur_result)
+
+    def print_from_api(self, product: dict):
+        # get substitutes of the current product from the openfoodfacts API.
+        substitutes = self.api_operator.get_substitutes(
+            product['categories_tags'][-1],
+            product.get('nutrition_grade', 'e'))
+        # deepcopy for a isolate change
+        operateur_result = [deepcopy(product)]
+        if substitutes:
+            operateur_result.extend(deepcopy(substitutes))
+        self.printer_adapter_for_terminal(operateur_result)
+        # print product and his subsitutes in the terminal
+        self.printer(operateur_result)
+
+        save_choice = self.ask_with_input(-1, ('y', 'n'))
+
+        if save_choice == 'y':
+            # save product and his substitutes
+            self.database_manager.save_product(product, substitutes)
+            cprint('Produit enregistré dans la base de données.', 'red')
+
+    @staticmethod
+    def wash_categories(product: dict):
         # wash categories_tag and categories
         i = 0
         while i <= len(product['categories_tags']) - 1:
             if ':' in product['categories_tags'][i]:
-                product['categories_tags'][i] = (product['categories_tags'][i].split(':'))[1]
+                product['categories_tags'][i] = \
+                    (product['categories_tags'][i].split(':'))[1]
             i += 1
+
         product['categories'] = product['categories'].split(',')
         i = 0
         while i <= len(product['categories']) - 1:
             if ':' in product['categories'][i]:
-                product['categories'][i] = (product['categories'][i].split(':'))[1]
+                product['categories'][i] = \
+                    (product['categories'][i].split(':'))[1]
             i += 1
-        # procedure_result[1] = p_product_id
-        # procedure_result[2] = p_exist_substitutes
-        # procedure_result[3] = p_researched_subsitutes
-        procedure_result = self.database_manager.check_if_product_exist_by_bar_code(product['code'])
-        if procedure_result[1]:
-            # if product already exist in database p_researched_subsitutes = 0
-            print('Produit déjà présent dans la base de données.')
-            # if product doesn't have substitutes in database
-            if not procedure_result[2] and not procedure_result[3]:
-                # get substitutes of the current product from the openfoodfacts API
-                substitutes = self.api_operator.get_substitutes(product['categories_tags'][-1],
-                                                                product.get('nutrition_grade', 'e'))
-                self.database_manager.save_substitutes_sql_database(procedure_result[1], substitutes)
-            operateur_result = []
-            self.database_manager.fill_list_with_product_and_substitutes(procedure_result[1], operateur_result)
-            self.printer(operateur_result)
-        else:
-            # get substitutes of the current product from the openfoodfacts API.
-            substitutes = self.api_operator.get_substitutes(product['categories_tags'][-1],
-                                                            product.get('nutrition_grade', 'e'))
-            # deepcopy for a isolate change
-            operateur_result = [deepcopy(product)]
-            if substitutes:
-                operateur_result.extend(deepcopy(substitutes))
-            self.printer_adapter_for_terminal(operateur_result)
-            # print product and his subsitutes in the terminal
-            self.printer(operateur_result)
-            while True:
-                save_choice = str(input('Sauvergader dans la base de données ? (y/n) '))
-                if save_choice not in ('y', 'n'):
-                    continue
-                break
-            if save_choice == 'y':
-                # save product and his substitutes
-                self.database_manager.save_product_sql_database(product, substitutes)
-                cprint('Produit enregistré dans la base de données.', 'red')
 
     @staticmethod
     def printer_adapter_for_terminal(products: list):
-        """Join each list in the given product from the openfoodfacts API for the printer function"""
+        """Join each list in the given product from the
+        openfoodfacts API for the printer function"""
         for product in products:
             product['categories'] = ', '.join(product.get('categories', ()))
             product['brands_tags'] = ', '.join(product.get('brands_tags', ()))
-            product['ingredients'] = ', '.join(ingredient['text'] for ingredient in product.get('ingredients', ()))
+            product['ingredients'] = ', '.join(
+                ingredient['text'] for ingredient in
+                product.get('ingredients', ()))
             product['stores_tags'] = ', '.join(product.get('stores_tags', ()))
 
     @staticmethod
@@ -370,7 +434,8 @@ class Printer:
             reply = input('Choisir un numéro (tapez "quit" pour quitter) : ')
             try:
                 if reply not in str_choices:
-                    if int(reply) not in range(1, range_param + 1):
+                    if range_param >= 1 and \
+                            int(reply) not in range(1, range_param + 1):
                         continue
             except ValueError:
                 continue
