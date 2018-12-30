@@ -6,11 +6,6 @@ DB_PWD = 'hWfY7Uv82k7L9f2Sr._.'
 STORE_DEPARTMENT = {
     'Prêt à deguster': ('Sandwichs', 'Desserts', 'Entrées'),
     'Fruits et Légumes': ('Fruits', 'Légumes frais'),
-    'Viande et Poissons': ({
-        'boucherie': (
-            'Viandes fraîches', 'Bœuf', 'Viandes de veau', 'Porc'),
-        'Poissonnerie': ('Fruits de mer', 'Sushi')
-    }),
     'Pains et Pâtisseries': ('Pain', 'Gâteaux'),
     'Crémerie': ('Œufs', 'Crèmes fraîches', 'Laits', 'Boissons lactées',
                  {

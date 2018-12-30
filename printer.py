@@ -47,7 +47,7 @@ class Printer:
             clean_terminal()
             cprint(' Menu ', 'red')
             print("==================")
-            cprint(' 1) Quel aliment souhaitez-vous remplacer ? ', 'red')
+            cprint(' 1) Quel aliment souhaitez-vous remplacer ?', 'red')
             cprint(' 2) Retrouver mes aliments substitués.', 'red')
 
             reply_1 = self.ask_with_input('Choisir un numéro '
@@ -137,10 +137,11 @@ class Printer:
         for i, department in enumerate(select):
             if isinstance(department, dict):
                 dict_index_in_tuple = i
-                keys = []
                 for key in department.keys():
-                    keys.append({"value": key + ' > ', "key_in_dict": key})
-                _list.extend(keys)
+                    _list.append({"value": key + ' >', "key_in_dict": key})
+            elif isinstance(select, dict) and isinstance(select.get(department),
+                                                         tuple):
+                _list.append(department + ' >')
             else:
                 _list.append(department)
 
@@ -158,12 +159,7 @@ class Printer:
 
             print('Choisir un produit :')
 
-            range_param = 1
-
-            for i, product in enumerate(products, start=1):
-                range_param = i
-                cprint(str(i) + ') ' + product.get('product_name', '') +
-                       ' - ' + product.get('generic_name', ''), 'blue')
+            range_param = self.print_products_line(products)
 
             reply = self.ask_with_input('Choisir un numéro'
                                         ' (tapez "quit" pour quitter) : ',
@@ -179,7 +175,7 @@ class Printer:
             operateur_result = []
             self.database_manager.fill_list_with_product_and_substitutes(
                 product.get('id'), operateur_result)
-            # print product and his subsitutes in the terminal
+            # print product and his substitutes in the terminal
             self.printer(operateur_result)
 
             self.ask_with_input('Ok ? (y) ', -1, ('y',))
@@ -195,18 +191,15 @@ class Printer:
 
             # get products with research from openfoodfacts api
             products = self.api_operator.get_products(research)
+
             if not products:
                 cprint("Aucun résultat.", "red")
+                self.ask_with_input('Ok ? (y) ', -1, ('y',))
                 continue
 
             print('Choisir un produit :')
 
-            range_param = 1
-            for i, product in enumerate(products, start=1):
-                range_param = i
-                cprint(str(i) + ') ' +
-                       product.get('product_name', '') +
-                       ' - ' + product.get('generic_name', ''), 'blue')
+            range_param = self.print_products_line(products)
 
             reply = self.ask_with_input('Choisir un numéro '
                                         '(tapez "quit" pour quitter) : ',
@@ -242,12 +235,9 @@ class Printer:
             cprint(str(number_page) + " page(s) pour " + str(
                 data['count']) + " résultat(s).")
             print('Choisir un produit :')
-            products = data['products']
-            for i, product in enumerate(products, start=1):
-                cprint(str(i) + ') ' +
-                       product.get('product_name', '') +
-                       ' - ' +
-                       product.get('generic_name', ''), 'blue')
+
+            self.print_products_line(data['products'])
+
             print('page ' + str(page) + ' sur ' + str(number_page))
             reply_3 = self.ask_with_input('Choisir un numéro (tapez "quit" pour'
                                           ' quitter, "pp" pour pagge précedente'
@@ -263,7 +253,7 @@ class Printer:
                     page -= 1
             else:
                 product_number = int(reply_3) - 1
-                self.render(products[product_number])
+                self.render(data['products'][product_number])
 
     def __print_from_database(self, product: dict, procedure_result: list):
         # procedure_result[1] = p_product_id
@@ -294,7 +284,7 @@ class Printer:
         operateur_result = [deepcopy(product)]
         if substitutes:
             operateur_result.extend(deepcopy(substitutes))
-        self.printer_adapter_for_terminal(operateur_result)
+        self.adapter_for_terminal(operateur_result)
 
         # print product and his subsitutes in the terminal
         self.printer(operateur_result)
@@ -327,7 +317,7 @@ class Printer:
             i += 1
 
     @staticmethod
-    def printer_adapter_for_terminal(products: list):
+    def adapter_for_terminal(products: list):
         """Join each list in the given product from the
         openfoodfacts API for the printer function"""
         for product in products:
@@ -379,3 +369,24 @@ class Printer:
             break
 
         return reply
+
+    def print_products_line(self, products):
+        range_param = 1
+
+        self.adapter_for_terminal(products)
+
+        for i, product in enumerate(products, start=1):
+            range_param = i
+
+            _str = str(i) + ") "
+
+            if product.get('product_name'):
+                _str += product.get('product_name')
+            if product.get('generic_name'):
+                _str += " - " + product.get('generic_name')
+            if product.get('brands_tags'):
+                _str += " - marques : (" + product.get('brands_tags') + ")"
+
+            cprint(_str, 'blue')
+
+        return range_param
