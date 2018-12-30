@@ -281,8 +281,10 @@ class PrinterManager:
         substitutes = self.api_operator.get_substitutes(
             product['categories_tags'][-1],
             product.get('nutrition_grade', 'e'))
+
         # deepcopy for a isolate change
         operateur_result = [deepcopy(product)]
+
         if substitutes:
             operateur_result.extend(deepcopy(substitutes))
 
@@ -323,16 +325,12 @@ class PrinterManager:
         """Join each list in the given product from the
         openfoodfacts API for the printer function"""
         for product in products:
-            if product.get('already_adapted'):
-                continue
-
             product['categories'] = ', '.join(product.get('categories', ()))
             product['brands_tags'] = ', '.join(product.get('brands_tags', ()))
             product['ingredients'] = ', '.join(
                 ingredient['text'] for ingredient in
                 product.get('ingredients', ()))
             product['stores_tags'] = ', '.join(product.get('stores_tags', ()))
-            product['already_adapted'] = True
 
     @staticmethod
     def printer(products: list):
@@ -378,6 +376,8 @@ class PrinterManager:
 
     def print_products_line(self, products):
         range_param = 1
+
+        products = deepcopy(products)
 
         self.adapter_for_terminal(products)
 
