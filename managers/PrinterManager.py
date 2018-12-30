@@ -1,5 +1,6 @@
 from copy import deepcopy
-from managers import ApiOperatorManager, DatabaseManager
+from managers.ApiManager import ApiManager
+from managers.DatabaseManager import DatabaseManager
 from termcolor import cprint
 from math import ceil
 from constants import STORE_DEPARTMENT
@@ -33,11 +34,11 @@ def clean_terminal():
         os.system("clear")
 
 
-class Printer:
+class PrinterManager:
     product_url = "https://fr.openfoodfacts.org/product/{}"
 
     def __init__(self):
-        self.api_operator = ApiOperatorManager()
+        self.api_operator = ApiManager()
 
     def __call__(self, *args, **kwargs):
         self.database_manager = DatabaseManager()
@@ -284,6 +285,7 @@ class Printer:
         operateur_result = [deepcopy(product)]
         if substitutes:
             operateur_result.extend(deepcopy(substitutes))
+
         self.adapter_for_terminal(operateur_result)
 
         # print product and his subsitutes in the terminal
@@ -321,12 +323,16 @@ class Printer:
         """Join each list in the given product from the
         openfoodfacts API for the printer function"""
         for product in products:
+            if product.get('already_adapted'):
+                continue
+
             product['categories'] = ', '.join(product.get('categories', ()))
             product['brands_tags'] = ', '.join(product.get('brands_tags', ()))
             product['ingredients'] = ', '.join(
                 ingredient['text'] for ingredient in
                 product.get('ingredients', ()))
             product['stores_tags'] = ', '.join(product.get('stores_tags', ()))
+            product['already_adapted'] = True
 
     @staticmethod
     def printer(products: list):
@@ -342,7 +348,7 @@ class Printer:
                 print("Résultat produit")
                 i += 1
             print(product['product_name'], '|', "code_bar :", product['code'],
-                  '|', Printer.product_url.format(product['code']))
+                  '|', PrinterManager.product_url.format(product['code']))
             print("nom généric :", product.get('generic_name'))
             print("marques :", product['brands_tags'])
             print('nutrition grade :', product.get('nutrition_grades',

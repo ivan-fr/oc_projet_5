@@ -1,5 +1,5 @@
-from printer import Printer
+from managers.PrinterManager import PrinterManager
 
 if __name__ == '__main__':
-    _printer = Printer()
+    _printer = PrinterManager()
     _printer()
