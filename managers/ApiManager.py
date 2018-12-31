@@ -81,5 +81,7 @@ class ApiManager:
         return substitutes
 
     def get_products_from_category(self, category: str, page: int):
+        """Get products from a category"""
+
         r = requests.get(self.category_url.format(slugify(category), page))
         return r.json()

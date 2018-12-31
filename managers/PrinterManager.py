@@ -28,10 +28,12 @@ def _find_words(string: str):
 
 
 def clean_terminal():
+    """clean the terminal"""
+
     if platform.system() == "Windows":
         os.system("cls")
-    elif platform.system() == "Linux":
-        os.system("clear")
+    elif platform.system() == "Linux" or platform.system() == "Darwin":
+        os.system('clear')
 
 
 class PrinterManager:
@@ -41,9 +43,10 @@ class PrinterManager:
         self.api_operator = ApiManager()
 
     def __call__(self, *args, **kwargs):
+        """Init main loop for the application."""
+
         self.database_manager = DatabaseManager()
 
-        # Init main loop for the application.
         while True:
             clean_terminal()
             cprint(' Menu ', 'red')
@@ -79,6 +82,8 @@ class PrinterManager:
         self.database_manager.close()
 
     def get_store_department(self):
+        """get store departments and print it"""
+
         departments = tuple(STORE_DEPARTMENT.keys())
 
         position, step = "", ""
@@ -122,6 +127,8 @@ class PrinterManager:
 
     @staticmethod
     def __get_sub_department(position: str):
+        """get sub department from a position"""
+
         detail_depth = position.split('|')
 
         select = STORE_DEPARTMENT
@@ -149,7 +156,8 @@ class PrinterManager:
         return _list, dict_index_in_tuple
 
     def get_substitutable_products(self):
-        """Get substitutable products"""
+        """Get substitutable products and print it"""
+
         while True:
             clean_terminal()
             products = self.database_manager.get_substitutable_products()
@@ -182,7 +190,8 @@ class PrinterManager:
             self.ask_with_input('Ok ? (y) ', -1, ('y',))
 
     def do_research(self):
-        """Research function."""
+        """do a reasearch of product and print it"""
+
         while True:
             clean_terminal()
             research = " ".join(_find_words(str(
@@ -213,6 +222,8 @@ class PrinterManager:
             self.render(products[product_number])
 
     def render(self, product: dict):
+        """ print product and his substitutes """
+
         self.wash_categories(product)
         clean_terminal()
 
@@ -227,6 +238,8 @@ class PrinterManager:
             self.__print_from_api(product)
 
     def __print_products_navigation(self, category):
+        """print products from a category with a navigation page"""
+
         page = 1
         while True:
             clean_terminal()
@@ -257,6 +270,9 @@ class PrinterManager:
                 self.render(data['products'][product_number])
 
     def __print_from_database(self, product: dict, procedure_result: list):
+        """print substitutes of the current product
+         from the database  """
+
         # procedure_result[1] = p_product_id
         # procedure_result[2] = p_exist_substitutes
         # procedure_result[3] = p_researched_subsitutes
@@ -277,7 +293,9 @@ class PrinterManager:
         self.ask_with_input('Ok ? (y) ', -1, ('y',))
 
     def __print_from_api(self, product: dict):
-        # get substitutes of the current product from the openfoodfacts API.
+        """ print substitutes of the current product
+         from the openfoodfacts API """
+
         substitutes = self.api_operator.get_substitutes(
             product['categories_tags'][-1],
             product.get('nutrition_grade', 'e'))
@@ -304,7 +322,8 @@ class PrinterManager:
 
     @staticmethod
     def wash_categories(product: dict):
-        # wash categories_tag and categories
+        """wash categories_tag and categories"""
+
         i = 0
         while i <= len(product['categories_tags']) - 1:
             if ':' in product['categories_tags'][i]:
@@ -324,6 +343,7 @@ class PrinterManager:
     def adapter_for_terminal(products: list):
         """Join each list in the given product from the
         openfoodfacts API for the printer function"""
+
         for product in products:
             product['categories'] = ', '.join(product.get('categories', ()))
             product['brands_tags'] = ', '.join(product.get('brands_tags', ()))
@@ -375,6 +395,8 @@ class PrinterManager:
         return reply
 
     def print_products_line(self, products):
+        """ print products line for the selection input """
+
         range_param = 1
 
         products = deepcopy(products)

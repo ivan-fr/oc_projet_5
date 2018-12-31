@@ -26,12 +26,16 @@ class DatabaseManager:
         return products
 
     def get_product_detail(self, product_id: int):
+        """get product detail from database"""
+
         self.cursor.callproc('get_product_detail', (product_id,))
 
         for result in self.cursor.stored_results():
             return dict(zip(result.column_names, result.fetchone()))
 
     def check_if_product_exist(self, code_product: str):
+        """check if product already exist in database"""
+
         # procedure_result[1] = p_product_id
         # procedure_result[2] = p_exist_substitutes
         # procedure_result[3] = p_researched_subsitutes
@@ -50,7 +54,7 @@ class DatabaseManager:
                 list_.append(self.get_product_detail(int(substitute_id)))
 
     def save_product(self, product: (dict, str), substitutes: (list, None)):
-        # Save a product and his substitutes in the database.
+        """Save a product and his substitutes in the database."""
 
         # procedure_result[1] = p_product_id
         # procedure_result[2] = p_exist_substitutes
@@ -139,7 +143,8 @@ class DatabaseManager:
         return r_id
 
     def save_substitutes_sql_database(self, product_id: str, substitutes: list):
-        # save relationship beetween products
+        """save relationship beetween products"""
+
         if substitutes is not None:
             for substitute in substitutes:
 
@@ -161,5 +166,7 @@ class DatabaseManager:
         self.mydb.commit()
 
     def close(self):
+        """close the database"""
+
         self.cursor.close()
         self.mydb.close()
