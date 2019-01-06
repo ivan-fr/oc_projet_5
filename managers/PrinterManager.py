@@ -5,7 +5,6 @@ from termcolor import cprint
 from math import ceil
 from constants import STORE_DEPARTMENT
 
-import platform
 import os
 
 
@@ -29,14 +28,14 @@ def _find_words(string: str):
 
 def clean_terminal():
     """clean the terminal"""
-
-    if platform.system() == "Windows":
-        os.system("cls")
-    elif platform.system() == "Linux" or platform.system() == "Darwin":
-        os.system('clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 class PrinterManager:
+    """his role is to contain the logic of the flow
+     of the messages to be displayed on the
+    terminal"""
+
     product_url = "https://fr.openfoodfacts.org/product/{}"
 
     def __init__(self):

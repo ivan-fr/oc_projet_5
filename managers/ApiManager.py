@@ -4,7 +4,7 @@ from slugify import slugify
 
 
 class ApiManager:
-    """this class communicates with the api of openfoodfacts"""
+    """its role is to communicate with the Openfoodfacts JSON API."""
 
     # Init url from openfoodfacts api.
     search_url = "https://fr.openfoodfacts.org/cgi/search.pl"

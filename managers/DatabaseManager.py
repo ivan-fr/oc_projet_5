@@ -3,6 +3,10 @@ import mysql.connector
 
 
 class DatabaseManager:
+    """This class will be able to call
+     stored procedures or views
+    available in the database"""
+
     def __init__(self):
         # Connect to the mysql database.
         self.mydb = mysql.connector.connect(host=DB_HOST,
