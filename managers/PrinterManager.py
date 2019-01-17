@@ -265,8 +265,8 @@ class PrinterManager:
             print('page ' + str(page) + ' sur ' + str(number_page))
             reply_3 = self.ask_with_input('Choisir un numéro (tapez "quit" pour'
                                           ' quitter, "pp" pour pagge précedente'
-                                          ', "ps" pour page suivante, p<number>'
-                                          ' pour aller à la page number) : ',
+                                          ', "ps" pour page suivante, p<numéro>'
+                                          ' pour aller à la page numéro) : ',
                                           20,
                                           ('quit', 'pp', 'ps'),
                                           input_validation)
