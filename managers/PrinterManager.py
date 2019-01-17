@@ -416,7 +416,7 @@ class PrinterManager:
 
         return reply
 
-    def print_products_line(self, products):
+    def print_products_line(self, products: list):
         """ print products line for the selection input """
 
         range_param = 1
