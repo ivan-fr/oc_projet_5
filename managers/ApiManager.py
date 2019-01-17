@@ -60,12 +60,14 @@ class ApiManager:
             i_substitutes, i_mark = 0, 0
             while i_substitutes <= 4 and i_mark <= r2['count'] - 1 and \
                     r2['tags'][i_mark]['id'] < nutrition_grades:
+                print(r2['tags'][i_mark]['id'], r2['tags'][i_mark]['id'] < nutrition_grades, nutrition_grades)
                 r3 = requests.get(
                     self.product_marks_url.format(slugify(category),
                                                   r2['tags'][i_mark]['id']))
                 r3 = r3.json()
                 substitutes += r3['products'][:5 - i_substitutes]
                 i_substitutes += len(r3['products'][:5 - i_substitutes])
+
                 i_mark += 1
 
         # wash categories keys

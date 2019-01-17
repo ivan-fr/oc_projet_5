@@ -13,13 +13,14 @@ def _find_words(string: str):
     if string:
         cursor, i, string = 0, 0, string + " "
         while i <= len(string) - 1:
-            if string[i] in (' ', '\n', ',', '.', ')', ']'):
+            if string[i] in (' ', '\n', ',', '.', ')', ']', ';'):
                 if i - 1 >= cursor:
                     yield string[cursor:i]
                 delta = 1
                 while i + delta <= len(string) - 1:
                     if string[i + delta] not in (
-                            ' ', '\n', ',', '.', '?', '!', '[', ']', '(', ')'):
+                            ' ', '\n', ',', '.', '?', '!', '[', ']', '(', ')',
+                            ';'):
                         break
                     delta += 1
                 i = cursor = i + delta
@@ -223,8 +224,8 @@ class PrinterManager:
     def render(self, product: dict):
         """ print product and his substitutes """
 
-        self.wash_categories(product)
         clean_terminal()
+        self.wash_categories(product)
 
         # procedure_result[1] = p_product_id
         # procedure_result[2] = p_exist_substitutes
@@ -238,6 +239,16 @@ class PrinterManager:
 
     def __print_products_navigation(self, category):
         """print products from a category with a navigation page"""
+
+        def input_validation(string: str):
+            if string.startswith('p'):
+                try:
+                    int(string[1:])
+                except ValueError:
+                    return False
+                else:
+                    return True
+            return False
 
         page = 1
         while True:
@@ -254,27 +265,36 @@ class PrinterManager:
             print('page ' + str(page) + ' sur ' + str(number_page))
             reply_3 = self.ask_with_input('Choisir un numéro (tapez "quit" pour'
                                           ' quitter, "pp" pour pagge précedente'
-                                          ', "ps" pour page suivante) : ', 20,
-                                          ('quit', 'pp', 'ps'))
+                                          ', "ps" pour page suivante, p<number>'
+                                          ' pour aller à la page number) : ',
+                                          20,
+                                          ('quit', 'pp', 'ps'),
+                                          input_validation)
             if reply_3 == 'quit':
                 break
-            elif reply_3 == "ps":
-                if page <= number_page - 1:
-                    page += 1
-            elif reply_3 == "pp":
-                if page >= 2:
-                    page -= 1
+            elif reply_3.startswith('p'):
+                if reply_3 == "ps":
+                    if page <= number_page - 1:
+                        page += 1
+                elif reply_3 == "pp":
+                    if page >= 2:
+                        page -= 1
+                else:
+                    reply_3 = int(reply_3[1:])
+                    if 1 <= reply_3 <= number_page:
+                        page = reply_3
             else:
                 product_number = int(reply_3) - 1
                 self.render(data['products'][product_number])
 
     def __print_from_database(self, product: dict, procedure_result: list):
-        """print substitutes of the current product
+        """print the product and his substitutes
          from the database  """
 
         # procedure_result[1] = p_product_id
         # procedure_result[2] = p_exist_substitutes
         # procedure_result[3] = p_researched_subsitutes
+
         print('Produit déjà présent dans la base de données.')
         # if product doesn't have substitutes in database
         if not procedure_result[2] and not procedure_result[3]:
@@ -282,7 +302,7 @@ class PrinterManager:
             # from the openfoodfacts API
             substitutes = self.api_operator.get_substitutes(
                 product['categories_tags'][-1],
-                product.get('nutrition_grade', 'e'))
+                product.get('nutrition_grades', 'e'))
             self.database_manager.save_substitutes_sql_database(
                 procedure_result[1], substitutes)
         operateur_result = []
@@ -297,7 +317,7 @@ class PrinterManager:
 
         substitutes = self.api_operator.get_substitutes(
             product['categories_tags'][-1],
-            product.get('nutrition_grade', 'e'))
+            product.get('nutrition_grades', 'e'))
 
         # deepcopy for a isolate change
         operateur_result = [deepcopy(product)]
@@ -377,12 +397,15 @@ class PrinterManager:
         print()
 
     @staticmethod
-    def ask_with_input(string, range_param: int, str_choices: tuple):
+    def ask_with_input(string, range_param: int, str_choices: tuple,
+                       custom_validation: (callable, None) = None):
         """a loop for input choices"""
         while True:
             reply = input(string)
             try:
-                if reply not in str_choices:
+                if reply not in str_choices and not (
+                        custom_validation is not None and custom_validation(
+                        reply)):
                     if range_param <= 0:
                         continue
                     elif int(reply) not in range(1, range_param + 1):
